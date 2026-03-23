@@ -1,5 +1,6 @@
 import evdev
 import threading
+import time
 
 # evdev axis codes
 AX_LX = evdev.ecodes.ABS_X
@@ -35,6 +36,11 @@ def find_gamepad():
             return device
     raise Exception("No gamepads found")
 
+def input_thread():
+    while True:
+        print("Hi from input thread")
+        time.sleep(1)
+
 def main():
     print("Hello from ctrly-py!")
     try:
@@ -45,6 +51,15 @@ def main():
     
     print(device)
 
+    thr_input = threading.Thread(target=input_thread)
+    thr_input.start()
+
+    try:
+        while True:
+            print("Hi from main")
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Bye bye")
 
 if __name__ == "__main__":
     main()
