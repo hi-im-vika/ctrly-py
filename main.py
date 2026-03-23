@@ -47,10 +47,24 @@ def find_gamepad():
             return device
     raise Exception("No gamepads found")
 
-def input_thread():
-    while True:
-        print("Hi from input thread")
-        time.sleep(1)
+def input_thread(dev):
+    for evt in dev.read_loop():
+        if evt.type == evdev.ecodes.EV_ABS:
+            if evt.code == AX_LX:
+                gp_state.lx = evt.value
+            elif evt.code == AX_LY:
+                gp_state.ly = evt.value
+            elif evt.code == AX_RX:
+                gp_state.rx = evt.value
+            elif evt.code == AX_RY:
+                gp_state.ry = evt.value
+        elif evt.type == evdev.ecodes.EV_KEY:
+            bit = BTN_MAP.get(evt.code)
+            if bit is not None:
+                if evt.value:
+                    gp_state.buttons |= (1 << bit)
+                else:
+                    gp_state.buttons &= ~(1 << bit)
 
 def main():
     print("Hello from ctrly-py!")
