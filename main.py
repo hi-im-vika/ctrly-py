@@ -62,7 +62,7 @@ def main():
     
     print(device)
 
-    thr_input = threading.Thread(target=input_thread)
+    thr_input = threading.Thread(target=input_thread, args=(device,), daemon=True)
     thr_input.start()
 
     try:
