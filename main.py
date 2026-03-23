@@ -1,6 +1,11 @@
 import evdev
 import threading
 import time
+import serial
+import re
+import struct
+from serial.tools import list_ports
+from cobs import cobs
 from dataclasses import dataclass
 import dearpygui.dearpygui as dpg
 
@@ -31,8 +36,9 @@ class GamepadState:
     rx: int = 0
     ry: int = 0
     buttons: int = 0
+    rts: bool = False
 
-gp_state = GamepadState()
+gp_state = GamepadState(0,0,0,0,0, False)
 
 def find_gamepad():
     stick_ecodes = {AX_LX, AX_LY, AX_RX, AX_RY}
@@ -48,24 +54,63 @@ def find_gamepad():
             return device
     raise Exception("No gamepads found")
 
+def find_port():
+    ports = list_ports.grep(r'^\/dev\/ttyACM[1-9]+')    # ignore ttyACM0
+    try:
+        port = next(ports)
+        return port
+    except StopIteration:
+        raise Exception("No ports found")
+
+def serial_thread():
+    port = ''
+    while True:
+        while not port:
+            try:
+                port = find_port()
+            except:
+                print("No port found. Retrying in 1s")
+                time.sleep(1)
+        try:
+            print(port.device)
+            with serial.Serial(port.device, baudrate=115200) as ser:
+                while True:
+                    if (gp_state.rts):
+                        # put TX/RX stuff here
+                        gp_state.rts = False
+                        frame = struct.pack("<4hH", gp_state.lx, gp_state.ly, gp_state.rx, gp_state.ry, gp_state.buttons)
+                        encoded = cobs.encode(frame) + b'\x00'
+                        ser.write(encoded)
+                        print(f"{len(encoded)} bytes written")
+                    time.sleep(0.001)
+        except Exception as e:
+            print(e)
+            print("Serial port error. Disconnecting and retrying")
+            ser.close()
+            port = ''
+            time.sleep(1)     
+
 def input_thread(dev):
     for evt in dev.read_loop():
-        if evt.type == evdev.ecodes.EV_ABS:
-            if evt.code == AX_LX:
-                gp_state.lx = evt.value
-            elif evt.code == AX_LY:
-                gp_state.ly = evt.value
-            elif evt.code == AX_RX:
-                gp_state.rx = evt.value
-            elif evt.code == AX_RY:
-                gp_state.ry = evt.value
-        elif evt.type == evdev.ecodes.EV_KEY:
-            bit = BTN_MAP.get(evt.code)
-            if bit is not None:
-                if evt.value:
-                    gp_state.buttons |= (1 << bit)
-                else:
-                    gp_state.buttons &= ~(1 << bit)
+        while not gp_state.rts:
+            if evt.type == evdev.ecodes.EV_ABS:
+                if evt.code == AX_LX:
+                    gp_state.lx = evt.value
+                elif evt.code == AX_LY:
+                    gp_state.ly = evt.value
+                elif evt.code == AX_RX:
+                    gp_state.rx = evt.value
+                elif evt.code == AX_RY:
+                    gp_state.ry = evt.value
+            elif evt.type == evdev.ecodes.EV_KEY:
+                bit = BTN_MAP.get(evt.code)
+                if bit is not None:
+                    if evt.value:
+                        gp_state.buttons |= (1 << bit)
+                    else:
+                        gp_state.buttons &= ~(1 << bit)
+            gp_state.rts = True
+        time.sleep(0.001)
 
 def main():
     print("Hello from ctrly-py!")
@@ -83,6 +128,9 @@ def main():
 
     thr_input = threading.Thread(target=input_thread, args=(device,), daemon=True)
     thr_input.start()
+
+    thr_serial = threading.Thread(target=serial_thread, daemon=True)
+    thr_serial.start()
 
     with dpg.window(label="The Window",tag="Primary Window"):
         axis_text = dpg.add_text()
