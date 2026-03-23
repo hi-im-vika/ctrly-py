@@ -76,8 +76,9 @@ def serial_thread():
                 while True:
                     # put TX/RX stuff here
                     frame = struct.pack("<4hH", gp_state.lx, gp_state.ly, gp_state.rx, gp_state.ry, gp_state.buttons)
-                    print(f"Serial port found ({port.device})")
-                    ser.write(b'hello')
+                    encoded = cobs.encode(frame) + b'\x00'
+                    ser.write(encoded)
+                    print(f"{len(encoded)} bytes written")
                     time.sleep(1)
         except Exception as e:
             print(e)
