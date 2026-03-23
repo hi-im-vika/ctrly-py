@@ -32,7 +32,7 @@ def find_gamepad():
         has_sticks = any(x in d_caps for x in stick_ecodes)
         match_name = any(x in d_name.lower() for x in name_kws)
         if has_key and has_sticks and match_name:
-            return path
+            return device
     raise Exception("No gamepads found")
 
 def main():
