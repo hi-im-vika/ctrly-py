@@ -90,22 +90,24 @@ def serial_thread():
 
 def input_thread(dev):
     for evt in dev.read_loop():
-        if evt.type == evdev.ecodes.EV_ABS:
-            if evt.code == AX_LX:
-                gp_state.lx = evt.value
-            elif evt.code == AX_LY:
-                gp_state.ly = evt.value
-            elif evt.code == AX_RX:
-                gp_state.rx = evt.value
-            elif evt.code == AX_RY:
-                gp_state.ry = evt.value
-        elif evt.type == evdev.ecodes.EV_KEY:
-            bit = BTN_MAP.get(evt.code)
-            if bit is not None:
-                if evt.value:
-                    gp_state.buttons |= (1 << bit)
-                else:
-                    gp_state.buttons &= ~(1 << bit)
+        while not gp_state.rts:
+            if evt.type == evdev.ecodes.EV_ABS:
+                if evt.code == AX_LX:
+                    gp_state.lx = evt.value
+                elif evt.code == AX_LY:
+                    gp_state.ly = evt.value
+                elif evt.code == AX_RX:
+                    gp_state.rx = evt.value
+                elif evt.code == AX_RY:
+                    gp_state.ry = evt.value
+            elif evt.type == evdev.ecodes.EV_KEY:
+                bit = BTN_MAP.get(evt.code)
+                if bit is not None:
+                    if evt.value:
+                        gp_state.buttons |= (1 << bit)
+                    else:
+                        gp_state.buttons &= ~(1 << bit)
+            gp_state.rts = True
 
 def main():
     print("Hello from ctrly-py!")
