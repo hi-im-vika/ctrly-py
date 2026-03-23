@@ -37,8 +37,15 @@ def serial_thread():
 def main():
     print("Hello from ctrly-py!")
     
-    port = find_port()
-    print(port.device)
+    thr_serial = threading.Thread(target=serial_thread, daemon=True)
+    thr_serial.start()
+
+    try:
+        while True:
+            print("Hi from main thread")
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Exiting")
 
 if __name__ == "__main__":
     main()
