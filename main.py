@@ -38,6 +38,11 @@ class GamepadState:
     buttons: int = 0
 
 @dataclass
+class CtrlyState:
+    port: str = ''
+    connected: bool = False
+
+@dataclass
 class Telemetry:
     rx_count: int = 0
     tx_count: int = 0
@@ -45,6 +50,7 @@ class Telemetry:
     sd_rx_fail: int = 0
 
 gp_state = GamepadState(0,0,0,0,0)
+ctrly_state = CtrlyState()
 telemetry = Telemetry()
 
 input_mutex = Lock()
@@ -73,32 +79,48 @@ def find_port():
         raise Exception("No ports found")
 
 def serial_thread():
-    port = ''
     while True:
-        while not port:
+        while not ctrly_state.port:
             try:
-                port = find_port()
+                ctrly_state.port = find_port()
             except:
                 print("No port found. Retrying in 1s")
                 time.sleep(1)
         try:
-            print(port.device)
-            with serial.Serial(port.device, baudrate=115200) as ser:
+            print(ctrly_state.port.device)
+            with serial.Serial(ctrly_state.port.device, baudrate=115200) as ser:
+                ctrly_state.connected = True
                 while True:
                     with(input_mutex):
                         # put TX/RX stuff here
                         frame = struct.pack("<4hH", gp_state.lx, gp_state.ly, gp_state.rx, gp_state.ry, gp_state.buttons)
-                        print(f"{gp_state.lx} {gp_state.ly} {gp_state.rx} {gp_state.ry}")
+                        # print(f"{gp_state.lx} {gp_state.ly} {gp_state.rx} {gp_state.ry}")
                         encoded = cobs.encode(frame) + b'\x00'
                         ser.write(encoded)
-                        print(f"{len(encoded)} bytes written: {frame.hex()} to {encoded.hex()}")
+                        # print(f"{len(encoded)} bytes written: {frame.hex()} to {encoded.hex()}")
                     time.sleep(0.001)
         except Exception as e:
             print(e)
-            print("Serial port error. Disconnecting and retrying")
-            ser.close()
-            port = ''
-            time.sleep(1)     
+            ctrly_state.connected = False
+            ctrly_state.port = ''
+
+def serial_rx_thread():
+    while True:
+        while ctrly_state.connected:
+            try:
+                with serial.Serial(ctrly_state.port.device, baudrate=115200) as ser:
+                    encoded = ser.read_until(b'\x00')[:-1]
+                    with tm_mutex:
+                        try:
+                            decoded = cobs.decode(encoded)
+                            frame = struct.unpack("<3L",decoded)
+                            telemetry.rx_count = frame[0]
+                            telemetry.tx_count = frame[1]
+                            telemetry.fail_count = frame[2]
+                        except:
+                            telemetry.sd_rx_fail += 1
+            except Exception as e:
+                print(e)
 
 def input_thread(dev):
     for evt in dev.read_loop():
@@ -139,6 +161,9 @@ def main():
 
     thr_serial = Thread(target=serial_thread, daemon=True)
     thr_serial.start()
+
+    thr_serial_rx = Thread(target=serial_rx_thread, daemon=True)
+    thr_serial_rx.start()
 
     with dpg.window(label="The Window",tag="Primary Window"):
         axis_text = dpg.add_text()
