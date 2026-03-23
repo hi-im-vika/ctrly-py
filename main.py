@@ -1,3 +1,5 @@
+import evdev
+
 def main():
     print("Hello from ctrly-py!")
 
