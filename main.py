@@ -37,8 +37,18 @@ class GamepadState:
     ry: int = 0
     buttons: int = 0
 
+@dataclass
+class Telemetry:
+    rx_count: int = 0
+    tx_count: int = 0
+    fail_count: int = 0
+    sd_rx_fail: int = 0
+
 gp_state = GamepadState(0,0,0,0,0)
+telemetry = Telemetry()
+
 input_mutex = Lock()
+tm_mutex = Lock()
 
 def find_gamepad():
     stick_ecodes = {AX_LX, AX_LY, AX_RX, AX_RY}
@@ -147,6 +157,15 @@ def main():
             with dpg.table_row():
                 dpg.add_text(f"Response time")
                 dpg.add_text(f"0.1 ms")
+            with dpg.table_row():
+                dpg.add_text(f"TX side RX count")
+                tx_side_rx = dpg.add_text(f"9000 hz")
+            with dpg.table_row():
+                dpg.add_text(f"TX side TX count")
+                tx_side_tx = dpg.add_text(f"0.1 ms")
+            with dpg.table_row():
+                dpg.add_text(f"SD UART RX fails")
+                sd_rx_fail = dpg.add_text(f"0.1 ms")
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
@@ -155,6 +174,9 @@ def main():
         dpg.set_value(axis_text, f"{gp_state.ly:10} {gp_state.rx:10}")
         dpg.set_value(throttle_slider, gp_state.ly + 32767)
         dpg.set_value(steering_slider, gp_state.rx + 32767)
+        dpg.set_value(tx_side_tx, telemetry.tx_count)
+        dpg.set_value(tx_side_rx, telemetry.rx_count)
+        dpg.set_value(sd_rx_fail, telemetry.sd_rx_fail)
         dpg.render_dearpygui_frame()
     dpg.destroy_context()
 
