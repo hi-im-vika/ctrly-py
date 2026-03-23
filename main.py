@@ -81,8 +81,8 @@ def main():
 
     try:
         while True:
-            print("Hi from main")
-            time.sleep(1)
+            print(f"{gp_state.ly:10} {gp_state.rx:10}\r", end="")
+            time.sleep(0.001)
     except KeyboardInterrupt:
         print("Bye bye")
 
