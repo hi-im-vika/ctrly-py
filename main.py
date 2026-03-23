@@ -11,7 +11,9 @@ def find_port():
 
 def main():
     print("Hello from ctrly-py!")
-
+    
+    port = find_port()
+    print(port.device)
 
 if __name__ == "__main__":
     main()
