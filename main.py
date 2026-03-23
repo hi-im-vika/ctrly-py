@@ -75,12 +75,13 @@ def serial_thread():
             print(port.device)
             with serial.Serial(port.device, baudrate=115200) as ser:
                 while True:
-                    # put TX/RX stuff here
-                    frame = struct.pack("<4hH", gp_state.lx, gp_state.ly, gp_state.rx, gp_state.ry, gp_state.buttons)
-                    encoded = cobs.encode(frame) + b'\x00'
-                    ser.write(encoded)
-                    print(f"{len(encoded)} bytes written")
-                    time.sleep(1)
+                    if (gp_state.rts):
+                        # put TX/RX stuff here
+                        gp_state.rts = False
+                        frame = struct.pack("<4hH", gp_state.lx, gp_state.ly, gp_state.rx, gp_state.ry, gp_state.buttons)
+                        encoded = cobs.encode(frame) + b'\x00'
+                        ser.write(encoded)
+                        print(f"{len(encoded)} bytes written")
         except Exception as e:
             print(e)
             print("Serial port error. Disconnecting and retrying")
