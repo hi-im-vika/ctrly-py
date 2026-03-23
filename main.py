@@ -78,7 +78,7 @@ def find_port():
     except StopIteration:
         raise Exception("No ports found")
 
-def serial_thread():
+def serial_thread(t):
     while True:
         while not ctrly_state.port:
             try:
@@ -89,6 +89,8 @@ def serial_thread():
         try:
             print(ctrly_state.port.device)
             with serial.Serial(ctrly_state.port.device, baudrate=115200) as ser:
+                if not t.is_alive():
+                    t.start()
                 ctrly_state.connected = True
                 while True:
                     with(input_mutex):
@@ -157,13 +159,11 @@ def main():
     dpg.create_viewport(title='Custom Title')
 
     thr_input = Thread(target=input_thread, args=(device,), daemon=True)
-    thr_input.start()
-
-    thr_serial = Thread(target=serial_thread, daemon=True)
-    thr_serial.start()
-
     thr_serial_rx = Thread(target=serial_rx_thread, daemon=True)
-    thr_serial_rx.start()
+    thr_serial = Thread(target=serial_thread, args=(thr_serial_rx,), daemon=True)
+    
+    thr_input.start()
+    thr_serial.start()
 
     with dpg.window(label="The Window",tag="Primary Window"):
         axis_text = dpg.add_text()
