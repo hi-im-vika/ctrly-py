@@ -1,5 +1,5 @@
 import serial, re
-import threading
+import threading, time
 from serial.tools import list_ports
 
 def find_port():
