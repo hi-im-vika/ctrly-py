@@ -3,6 +3,7 @@ import threading
 import time
 import serial
 import re
+import struct
 from serial.tools import list_ports
 from cobs import cobs
 from dataclasses import dataclass
