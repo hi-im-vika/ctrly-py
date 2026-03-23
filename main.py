@@ -44,8 +44,8 @@ class CtrlyState:
 
 @dataclass
 class Telemetry:
-    rx_count: int = 0
     tx_count: int = 0
+    rx_count: int = 0
     fail_count: int = 0
     sd_rx_fail: int = 0
 
@@ -116,8 +116,8 @@ def serial_rx_thread():
                         try:
                             decoded = cobs.decode(encoded)
                             frame = struct.unpack("<3L",decoded)
-                            telemetry.rx_count = frame[0]
-                            telemetry.tx_count = frame[1]
+                            telemetry.tx_count = frame[0]
+                            telemetry.rx_count = frame[1]
                             telemetry.fail_count = frame[2]
                         except:
                             telemetry.sd_rx_fail += 1
@@ -183,11 +183,11 @@ def main():
                 dpg.add_text(f"Response time")
                 dpg.add_text(f"0.1 ms")
             with dpg.table_row():
-                dpg.add_text(f"TX side RX count")
-                tx_side_rx = dpg.add_text(f"9000 hz")
-            with dpg.table_row():
                 dpg.add_text(f"TX side TX count")
                 tx_side_tx = dpg.add_text(f"0.1 ms")
+            with dpg.table_row():
+                dpg.add_text(f"TX side RX count")
+                tx_side_rx = dpg.add_text(f"9000 hz")
             with dpg.table_row():
                 dpg.add_text(f"SD UART RX fails")
                 sd_rx_fail = dpg.add_text(f"0.1 ms")
