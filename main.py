@@ -1,5 +1,5 @@
 import evdev
-import threading
+from threading import Thread, Lock
 import time
 import serial
 import re
@@ -36,9 +36,9 @@ class GamepadState:
     rx: int = 0
     ry: int = 0
     buttons: int = 0
-    rts: bool = False
 
-gp_state = GamepadState(0,0,0,0,0, False)
+gp_state = GamepadState(0,0,0,0,0)
+input_mutex = Lock()
 
 def find_gamepad():
     stick_ecodes = {AX_LX, AX_LY, AX_RX, AX_RY}
@@ -75,13 +75,13 @@ def serial_thread():
             print(port.device)
             with serial.Serial(port.device, baudrate=115200) as ser:
                 while True:
-                    if (gp_state.rts):
+                    with(input_mutex):
                         # put TX/RX stuff here
-                        gp_state.rts = False
                         frame = struct.pack("<4hH", gp_state.lx, gp_state.ly, gp_state.rx, gp_state.ry, gp_state.buttons)
+                        print(f"{gp_state.lx} {gp_state.ly} {gp_state.rx} {gp_state.ry}")
                         encoded = cobs.encode(frame) + b'\x00'
                         ser.write(encoded)
-                        print(f"{len(encoded)} bytes written")
+                        print(f"{len(encoded)} bytes written: {frame.hex()} to {encoded.hex()}")
                     time.sleep(0.001)
         except Exception as e:
             print(e)
@@ -92,7 +92,7 @@ def serial_thread():
 
 def input_thread(dev):
     for evt in dev.read_loop():
-        while not gp_state.rts:
+        with input_mutex:
             if evt.type == evdev.ecodes.EV_ABS:
                 if evt.code == AX_LX:
                     gp_state.lx = evt.value
@@ -109,8 +109,6 @@ def input_thread(dev):
                         gp_state.buttons |= (1 << bit)
                     else:
                         gp_state.buttons &= ~(1 << bit)
-            gp_state.rts = True
-        time.sleep(0.001)
 
 def main():
     print("Hello from ctrly-py!")
@@ -126,10 +124,10 @@ def main():
     dpg.create_context()
     dpg.create_viewport(title='Custom Title')
 
-    thr_input = threading.Thread(target=input_thread, args=(device,), daemon=True)
+    thr_input = Thread(target=input_thread, args=(device,), daemon=True)
     thr_input.start()
 
-    thr_serial = threading.Thread(target=serial_thread, daemon=True)
+    thr_serial = Thread(target=serial_thread, daemon=True)
     thr_serial.start()
 
     with dpg.window(label="The Window",tag="Primary Window"):
