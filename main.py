@@ -1,4 +1,5 @@
 import evdev
+import threading
 
 # evdev axis codes
 AX_LX = evdev.ecodes.ABS_X
