@@ -13,9 +13,9 @@ def main():
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
+    dpg.set_primary_window("Primary Window", True)
     dpg.start_dearpygui()
     dpg.destroy_context()
-
 
 if __name__ == "__main__":
     main()
