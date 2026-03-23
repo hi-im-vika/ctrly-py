@@ -86,8 +86,8 @@ def main():
 
     with dpg.window(label="The Window",tag="Primary Window"):
         axis_text = dpg.add_text()
-        dpg.add_slider_int(label="Throttle", vertical=True, max_value=100, height=160)
-        dpg.add_slider_int(label="Steering", vertical=True, max_value=100, height=160)
+        throttle_slider = dpg.add_slider_int(label="Throttle", vertical=True, max_value=65535, height=160)
+        steering_slider = dpg.add_slider_int(label="Steering", vertical=True, max_value=65535, height=160)
         with dpg.table(header_row=False):
 
             # use add_table_column to add columns to the table,
@@ -107,6 +107,8 @@ def main():
     dpg.set_primary_window("Primary Window", True)
     while dpg.is_dearpygui_running():
         dpg.set_value(axis_text, f"{gp_state.ly:10} {gp_state.rx:10}")
+        dpg.set_value(throttle_slider, gp_state.ly + 32767)
+        dpg.set_value(steering_slider, gp_state.rx + 32767)
         dpg.render_dearpygui_frame()
     dpg.destroy_context()
 
