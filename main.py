@@ -2,6 +2,7 @@ import evdev
 import threading
 import time
 from dataclasses import dataclass
+import dearpygui.dearpygui as dpg
 
 # evdev axis codes
 AX_LX = evdev.ecodes.ABS_X
@@ -68,23 +69,46 @@ def input_thread(dev):
 
 def main():
     print("Hello from ctrly-py!")
+
     try:
         device = find_gamepad()
     except:
         print("No gamepad found")
         exit()
-    
+
     print(device)
+
+    dpg.create_context()
+    dpg.create_viewport(title='Custom Title')
 
     thr_input = threading.Thread(target=input_thread, args=(device,), daemon=True)
     thr_input.start()
 
-    try:
-        while True:
-            print(f"{gp_state.ly:10} {gp_state.rx:10}\r", end="")
-            time.sleep(0.001)
-    except KeyboardInterrupt:
-        print("Bye bye")
+    with dpg.window(label="The Window",tag="Primary Window"):
+        axis_text = dpg.add_text()
+        dpg.add_slider_int(label="Throttle", vertical=True, max_value=100, height=160)
+        dpg.add_slider_int(label="Steering", vertical=True, max_value=100, height=160)
+        with dpg.table(header_row=False):
+
+            # use add_table_column to add columns to the table,
+            # table columns use slot 0
+            dpg.add_table_column()
+            dpg.add_table_column()
+
+            with dpg.table_row():
+                dpg.add_text(f"Refresh rate")
+                dpg.add_text(f"9000 hz")
+            with dpg.table_row():
+                dpg.add_text(f"Response time")
+                dpg.add_text(f"0.1 ms")
+
+    dpg.setup_dearpygui()
+    dpg.show_viewport()
+    dpg.set_primary_window("Primary Window", True)
+    while dpg.is_dearpygui_running():
+        dpg.set_value(axis_text, f"{gp_state.ly:10} {gp_state.rx:10}")
+        dpg.render_dearpygui_frame()
+    dpg.destroy_context()
 
 if __name__ == "__main__":
     main()
