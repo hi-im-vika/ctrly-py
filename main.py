@@ -32,11 +32,17 @@ def find_gamepad():
         match_name = any(x in d_name.lower() for x in name_kws)
         if has_key and has_sticks and match_name:
             return path
-    return None
+    raise Exception("No gamepads found")
 
 def main():
     print("Hello from ctrly-py!")
-    print(find_gamepad())
+    try:
+        device = find_gamepad()
+    except:
+        print("No gamepad found")
+        exit()
+    
+    print(device)
 
 
 if __name__ == "__main__":
