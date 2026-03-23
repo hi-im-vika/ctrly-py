@@ -36,6 +36,8 @@ class GamepadState:
     rx: int = 0
     ry: int = 0
     buttons: int = 0
+    inv_ls: bool = True
+    inv_rs: bool = True
 
 @dataclass
 class CtrlyState:
@@ -129,13 +131,13 @@ def input_thread(dev):
         with input_mutex:
             if evt.type == evdev.ecodes.EV_ABS:
                 if evt.code == AX_LX:
-                    gp_state.lx = evt.value
+                    gp_state.lx = -evt.value if gp_state.inv_ls else evt.value
                 elif evt.code == AX_LY:
-                    gp_state.ly = evt.value
+                    gp_state.ly = -evt.value if gp_state.inv_ls else evt.value
                 elif evt.code == AX_RX:
-                    gp_state.rx = evt.value
+                    gp_state.rx = -evt.value if gp_state.inv_rs else evt.value
                 elif evt.code == AX_RY:
-                    gp_state.ry = evt.value
+                    gp_state.ry = -evt.value if gp_state.inv_rs else evt.value
             elif evt.type == evdev.ecodes.EV_KEY:
                 bit = BTN_MAP.get(evt.code)
                 if bit is not None:
