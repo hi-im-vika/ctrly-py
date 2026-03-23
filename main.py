@@ -75,6 +75,7 @@ def serial_thread():
             with serial.Serial(port.device, baudrate=115200) as ser:
                 while True:
                     # put TX/RX stuff here
+                    frame = struct.pack("<4hH", gp_state.lx, gp_state.ly, gp_state.rx, gp_state.ry, gp_state.buttons)
                     print(f"Serial port found ({port.device})")
                     ser.write(b'hello')
                     time.sleep(1)
