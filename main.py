@@ -1,6 +1,7 @@
 import evdev
 import threading
 import time
+from dataclasses import dataclass
 
 # evdev axis codes
 AX_LX = evdev.ecodes.ABS_X
@@ -21,6 +22,16 @@ BTN_MAP = {
     evdev.ecodes.BTN_THUMBL: 8,   # L3
     evdev.ecodes.BTN_THUMBR: 9,   # R3
 }
+
+@dataclass
+class GamepadState:
+    lx: int = 0
+    ly: int = 0
+    rx: int = 0
+    ry: int = 0
+    buttons: int = 0
+
+gp_state = GamepadState()
 
 def find_gamepad():
     stick_ecodes = {AX_LX, AX_LY, AX_RX, AX_RY}
