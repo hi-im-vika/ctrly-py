@@ -1,6 +1,7 @@
 import serial, re
 import threading, time
 from serial.tools import list_ports
+from cobs import cobs
 
 def find_port():
     ports = list_ports.grep(r'^\/dev\/ttyACM[1-9]+')    # ignore ttyACM0
