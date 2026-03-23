@@ -36,8 +36,9 @@ class GamepadState:
     rx: int = 0
     ry: int = 0
     buttons: int = 0
+    rts: bool = False
 
-gp_state = GamepadState(0,0,0,0,0)
+gp_state = GamepadState(0,0,0,0,0, False)
 
 def find_gamepad():
     stick_ecodes = {AX_LX, AX_LY, AX_RX, AX_RY}
