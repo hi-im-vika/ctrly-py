@@ -3,15 +3,31 @@ revision = 3
 requires-python = ">=3.13"
 
 [[package]]
+name = "cobs"
+version = "1.2.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/34/ef/ea149311227a4fc3160cc885fce06da7c7d76782a308ef070b8065c69953/cobs-1.2.2.tar.gz", hash = "sha256:dbdd5e32111d72786f83d0c269215dcd6ac629b1ac1962c6878221f3b2ca98da", size = 14582, upload-time = "2025-07-20T01:08:35.434Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b4/df/7f07559954d53d09680aa4f5c72db999e7643253e2ca4e431023fe5c1c40/cobs-1.2.2-cp313-cp313-win32.whl", hash = "sha256:a8fdf6ca70247e7271caea6f2f6f9c0343f5e872e2fd47e21f71831fa9ababa8", size = 26401, upload-time = "2025-07-20T01:08:32.508Z" },
+    { url = "https://files.pythonhosted.org/packages/0c/00/5b063105ff567bb7fb72c3cd3e96116a3889381fa2c0e7747497391dbecc/cobs-1.2.2-cp313-cp313-win_amd64.whl", hash = "sha256:fe3f7194d5fbbc02e8fb03d26ad626a33fa0d420b50d66ed60ac4bf516322d8e", size = 27774, upload-time = "2025-07-20T01:08:33.692Z" },
+    { url = "https://files.pythonhosted.org/packages/78/35/de1e889c26fcfc9ae6852b8f99e744e6690a3baae99f63e2b9fffdd21710/cobs-1.2.2-cp314-cp314-win32.whl", hash = "sha256:bcf08cb0b68c1824a87cfa89e0684d5a3eaee9b9e08b02ce4a54d5589536f01c", size = 26779, upload-time = "2026-03-09T02:18:48.711Z" },
+    { url = "https://files.pythonhosted.org/packages/b6/64/390e226843cc83066acc60257e0e71ebdbce6dd915ec4f3d34101b9ac31b/cobs-1.2.2-cp314-cp314-win_amd64.whl", hash = "sha256:1f27b7a553d809487287e4ed88540b2c30ed9c9bb596173bfcf549e705af7bf0", size = 28205, upload-time = "2026-03-09T02:18:20.193Z" },
+]
+
+[[package]]
 name = "ctrly-py"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "cobs" },
     { name = "pyserial" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pyserial", specifier = ">=3.5" }]
+requires-dist = [
+    { name = "cobs", specifier = ">=1.2.2" },
+    { name = "pyserial", specifier = ">=3.5" },
+]
 
 [[package]]
 name = "pyserial"
