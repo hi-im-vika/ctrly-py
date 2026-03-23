@@ -82,6 +82,7 @@ def serial_thread():
                         encoded = cobs.encode(frame) + b'\x00'
                         ser.write(encoded)
                         print(f"{len(encoded)} bytes written")
+                    time.sleep(0.001)
         except Exception as e:
             print(e)
             print("Serial port error. Disconnecting and retrying")
@@ -109,6 +110,7 @@ def input_thread(dev):
                     else:
                         gp_state.buttons &= ~(1 << bit)
             gp_state.rts = True
+        time.sleep(0.001)
 
 def main():
     print("Hello from ctrly-py!")
