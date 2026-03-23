@@ -20,8 +20,23 @@ BTN_MAP = {
     evdev.ecodes.BTN_THUMBR: 9,   # R3
 }
 
+def find_gamepad():
+    stick_ecodes = {AX_LX, AX_LY, AX_RX, AX_RY}
+    name_kws = {'microsoft', 'wireless'}
+    for path in evdev.list_devices():
+        device = evdev.InputDevice(path)
+        d_name = device.name
+        d_caps = device.capabilities()
+        has_key = evdev.ecodes.EV_KEY in d_caps
+        has_sticks = any(x in d_caps for x in stick_ecodes)
+        match_name = any(x in d_name.lower() for x in name_kws)
+        if has_key and has_sticks and match_name:
+            return path
+    return None
+
 def main():
     print("Hello from ctrly-py!")
+    print(find_gamepad())
 
 
 if __name__ == "__main__":
