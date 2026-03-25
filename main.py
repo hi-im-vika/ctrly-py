@@ -41,8 +41,8 @@ class GamepadState:
     buttons: int = 0
     inv_ls: bool = True
     inv_rs: bool = True
-    l_dz: float = 0.0
-    r_dz: float = 0.0
+    l_dz: int = 5000
+    r_dz: int = 5000
     ax_max: int = 0
     ax_min: int = 0
 
