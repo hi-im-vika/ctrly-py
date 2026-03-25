@@ -79,13 +79,6 @@ calib = Calibration()
 input_mutex = Lock()
 tm_mutex = Lock()
 
-# Source - https://stackoverflow.com/a/34837691
-# Posted by Delgan, modified by community. See post 'Timeline' for change history
-# Retrieved 2026-03-25, License - CC BY-SA 3.0
-
-def constrain(val, min_val, max_val):
-    return min(max_val, max(min_val, val))
-
 # Source - https://stackoverflow.com/a/70659904
 # Posted by CrazyChucky, modified by community. See post 'Timeline' for change history
 # Retrieved 2026-03-25, License - CC BY-SA 4.0
