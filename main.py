@@ -214,9 +214,9 @@ def main():
             with dpg.child_window(autosize_x=True, autosize_y=True):
                 with dpg.group(horizontal=True, width=0):
                     with dpg.child_window(width=102, autosize_y=True):
-                        with dpg.group(horizontal=True, width=0):
-                            throttle_slider = dpg.add_slider_int(vertical=True, max_value=gp_state.ax_max - gp_state.ax_min, height=160, )
-                            steering_slider = dpg.add_slider_int(vertical=True, max_value=gp_state.ax_max - gp_state.ax_min, height=160)
+                        with dpg.group():
+                            throttle_knob = dpg.add_knob_float(min_value = gp_state.ax_min, max_value=gp_state.ax_max)
+                            steering_knob = dpg.add_knob_float(min_value = gp_state.ax_min, max_value=gp_state.ax_max)
                     with dpg.child_window(autosize_y=True):
                         with dpg.plot(label="Acceleration Profile", height=400, width=-1,no_inputs=True):
                             dpg.add_plot_legend()
