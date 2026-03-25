@@ -297,7 +297,8 @@ def main():
 
                     raw_accel = dpg.add_drag_line(label="raw_accel", color=[255, 0, 0, 255], no_inputs=True)
                     filt_accel = dpg.add_drag_line(label="filt_accel", color=[255, 255, 0, 255], no_inputs=True)
-                    dpg.add_drag_rect(label="dz_rect", tag="dz_rect", color=[255, 0, 0, 255], default_value=(-calib.l_dz,calib.ax_min,calib.l_dz,calib.ax_max),no_inputs=True)
+                    
+                    l_dz_rect = dpg.add_drag_rect(label="dz_rect", tag="dz_rect", color=[255, 0, 0, 255], default_value=(-calib.l_dz,calib.ax_min,calib.l_dz,calib.ax_max),no_inputs=True)
                 with dpg.plot(label="Steering Profile", width=-1,no_inputs=True):
                     dpg.add_plot_legend()
                     steer_xaxis = dpg.add_plot_axis(dpg.mvXAxis, label="x")
@@ -308,8 +309,8 @@ def main():
                     raw_steer = dpg.add_drag_line(label="raw_steer", color=[255, 0, 0, 255], no_inputs=True)
                     filt_steer = dpg.add_drag_line(label="filt_steer", color=[255, 255, 0, 255], no_inputs=True)
 
-                    dpg.add_drag_rect(label="r_dz2_rect", color=[255, 255, 0, 255], default_value=(calib.ax_min - (-calib.r_dz2),calib.ax_min,calib.ax_max - (calib.r_dz2), calib.ax_max),no_inputs=True)
-                    dpg.add_drag_rect(label="r_dz_rect", color=[255, 0, 0, 255], default_value=(-calib.r_dz,calib.ax_min,calib.r_dz,calib.ax_max),no_inputs=True)
+                    r_dz2_rect = dpg.add_drag_rect(label="r_dz2_rect", color=[255, 255, 0, 255], default_value=(calib.ax_min - (-calib.r_dz2) - (-calib.trim),calib.ax_min,calib.ax_max - (calib.r_dz2) - (calib.trim), calib.ax_max),no_inputs=True)
+                    r_dz_rect = dpg.add_drag_rect(label="r_dz_rect", color=[255, 0, 0, 255], default_value=(-calib.r_dz,calib.ax_min,calib.r_dz,calib.ax_max),no_inputs=True)
 
 
     dpg.setup_dearpygui()
@@ -341,6 +342,8 @@ def main():
         else:
             dpg.configure_item(cb_use_l_dz, show=True)
             dpg.configure_item(cb_use_r_dz, show=True)
+
+        dpg.set_value(r_dz2_rect, (calib.ax_min - (-calib.r_dz2) - (-calib.trim),calib.ax_min,calib.ax_max - (calib.r_dz2) + (calib.trim), calib.ax_max))
 
         dpg.set_value(throttle_slider, gp_state.ly)
         dpg.set_value(steering_slider, gp_state.rx)
