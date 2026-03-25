@@ -285,6 +285,8 @@ def main():
                             cb_is_zoomy = dpg.add_checkbox(label="is zoomy", default_value=calib.is_zoomy, callback=is_zoomy_cb)
                             cb_use_l_dz = dpg.add_checkbox(label="use_l_dz", default_value=calib.use_l_dz, callback=use_l_dz_cb)
                             cb_use_r_dz = dpg.add_checkbox(label="use_r_dz", default_value=calib.use_r_dz, callback=use_r_dz_cb)
+                        dpg.add_button(label="fullscreen", width=100, height=100, callback=lambda:dpg.toggle_viewport_fullscreen())
+                        dpg.add_button(label="exit", width=100, height=100, callback=lambda:exit())
             with dpg.child_window(autosize_y=True):
                 with dpg.plot(label="Acceleration Profile", width=-1,no_inputs=True):
                     dpg.add_plot_legend()
