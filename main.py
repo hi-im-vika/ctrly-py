@@ -130,18 +130,24 @@ def serial_thread(t):
                     with(input_mutex):
                         # put TX/RX stuff here
                         # do deadzone calcs
-                        if calib.use_l_dz:
-                            gp_state.lx_filt = gp_state.lx if abs(gp_state.lx) > calib.l_dz else 0
-                            gp_state.ly_filt = gp_state.ly if abs(gp_state.ly) > calib.l_dz else 0
+                        if calib.is_zoomy:
+                                gp_state.lx_filt = gp_state.lx
+                                gp_state.ly_filt = gp_state.ly
+                                gp_state.rx_filt = gp_state.rx
+                                gp_state.ry_filt = gp_state.ry
                         else:
-                            gp_state.lx_filt = gp_state.lx
-                            gp_state.ly_filt = gp_state.ly
-                        if calib.use_r_dz:
-                            gp_state.rx_filt = map_range(gp_state.rx, calib.ax_min, calib.ax_max, calib.ax_min - (-calib.r_dz2), calib.ax_max - (calib.r_dz2)) + calib.trim if abs(gp_state.rx) > calib.r_dz else calib.trim
-                            gp_state.ry_filt = map_range(gp_state.ry, calib.ax_min, calib.ax_max, calib.ax_min - (-calib.r_dz2), calib.ax_max - (calib.r_dz2)) if abs(gp_state.ry) > calib.r_dz else 0
-                        else:
-                            gp_state.rx_filt = gp_state.rx
-                            gp_state.ry_filt = gp_state.ry
+                            if calib.use_l_dz:
+                                gp_state.lx_filt = gp_state.lx if abs(gp_state.lx) > calib.l_dz else 0
+                                gp_state.ly_filt = gp_state.ly if abs(gp_state.ly) > calib.l_dz else 0
+                            else:
+                                gp_state.lx_filt = gp_state.lx
+                                gp_state.ly_filt = gp_state.ly
+                            if calib.use_r_dz:
+                                gp_state.rx_filt = map_range(gp_state.rx, calib.ax_min, calib.ax_max, calib.ax_min - (-calib.r_dz2), calib.ax_max - (calib.r_dz2)) + calib.trim if abs(gp_state.rx) > calib.r_dz else calib.trim
+                                gp_state.ry_filt = map_range(gp_state.ry, calib.ax_min, calib.ax_max, calib.ax_min - (-calib.r_dz2), calib.ax_max - (calib.r_dz2)) if abs(gp_state.ry) > calib.r_dz else 0
+                            else:
+                                gp_state.rx_filt = gp_state.rx
+                                gp_state.ry_filt = gp_state.ry
                         frame = struct.pack("<4hH", gp_state.lx_filt, gp_state.ly_filt, gp_state.rx_filt, gp_state.ry_filt, gp_state.buttons)
                         # print(f"{gp_state.lx} {gp_state.ly} {gp_state.rx} {gp_state.ry}")
                         encoded = cobs.encode(frame) + b'\x00'
