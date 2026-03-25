@@ -8,6 +8,7 @@ from cobs import cobs
 from dataclasses import dataclass
 import dearpygui.dearpygui as dpg
 from enum import Enum
+import configparser
 
 # evdev axis codes
 AX_LX = evdev.ecodes.ABS_X
@@ -218,6 +219,9 @@ def input_thread(dev):
 
 def change_trim(sender, app_data, user_data):
     calib.trim = app_data
+    with open('config.ini', 'w') as cfgfile:
+        config["calibration"]["trim"] = str(calib.trim)
+        config.write(cfgfile)
 
 def is_zoomy_cb(sender, app_data, user_data):
     calib.is_zoomy = app_data
