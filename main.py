@@ -247,6 +247,9 @@ def use_l_dz_cb(sender, app_data, user_data):
 def use_r_dz_cb(sender, app_data, user_data):
     calib.use_r_dz = app_data
 
+def use_t_factor_cb(sender, app_data, user_data):
+    calib.use_t_factor = app_data
+
 def main():
     print("Hello from ctrly-py!")
 
@@ -302,6 +305,7 @@ def main():
                             cb_is_zoomy = dpg.add_checkbox(label="is zoomy", default_value=calib.is_zoomy, callback=is_zoomy_cb)
                             cb_use_l_dz = dpg.add_checkbox(label="use_l_dz", default_value=calib.use_l_dz, callback=use_l_dz_cb)
                             cb_use_r_dz = dpg.add_checkbox(label="use_r_dz", default_value=calib.use_r_dz, callback=use_r_dz_cb)
+                            cb_use_t_factor = dpg.add_checkbox(label="use_t_factor", default_value=calib.use_t_factor, callback=use_t_factor_cb)
                         dpg.add_button(label="fullscreen", width=100, height=100, callback=lambda:dpg.toggle_viewport_fullscreen())
                         dpg.add_button(label="exit", width=100, height=100, callback=lambda:exit())
             with dpg.child_window(autosize_y=True):
@@ -356,9 +360,11 @@ def main():
         if (calib.is_zoomy):
             dpg.configure_item(cb_use_l_dz, show=False)
             dpg.configure_item(cb_use_r_dz, show=False)
+            dpg.configure_item(cb_use_t_factor, show=False)
         else:
             dpg.configure_item(cb_use_l_dz, show=True)
             dpg.configure_item(cb_use_r_dz, show=True)
+            dpg.configure_item(cb_use_t_factor, show=True)
 
         dpg.set_value(r_dz2_rect, (calib.rx_min_dz,calib.ax_min,calib.rx_max_dz, calib.ax_max))
 
