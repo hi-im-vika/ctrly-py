@@ -37,6 +37,8 @@ class GamepadState:
     buttons: int = 0
     inv_ls: bool = True
     inv_rs: bool = True
+    l_dz: float = 0.0
+    r_dz: float = 0.0
 
 @dataclass
 class CtrlyState:
