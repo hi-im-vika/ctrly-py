@@ -130,7 +130,7 @@ def serial_thread(t):
                             gp_state.lx_filt = gp_state.lx
                             gp_state.ly_filt = gp_state.ly
                         if gp_state.use_r_dz:
-                            gp_state.rx_filt = map_range(gp_state.rx, gp_state.ax_min, gp_state.ax_max, gp_state.ax_min - (-gp_state.r_dz2), gp_state.ax_max - (gp_state.r_dz2)) if abs(gp_state.rx) > gp_state.r_dz else 0
+                            gp_state.rx_filt = map_range(gp_state.rx, gp_state.ax_min, gp_state.ax_max, gp_state.ax_min - (-gp_state.r_dz2), gp_state.ax_max - (gp_state.r_dz2)) + gp_state.trim if abs(gp_state.rx) > gp_state.r_dz else gp_state.trim
                             gp_state.ry_filt = map_range(gp_state.ry, gp_state.ax_min, gp_state.ax_max, gp_state.ax_min - (-gp_state.r_dz2), gp_state.ax_max - (gp_state.r_dz2)) if abs(gp_state.ry) > gp_state.r_dz else 0
                         else:
                             gp_state.rx_filt = gp_state.rx
