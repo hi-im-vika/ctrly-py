@@ -7,6 +7,7 @@ from serial.tools import list_ports
 from cobs import cobs
 from dataclasses import dataclass
 import dearpygui.dearpygui as dpg
+from enum import Enum
 
 # evdev axis codes
 AX_LX = evdev.ecodes.ABS_X
@@ -27,6 +28,11 @@ BTN_MAP = {
     evdev.ecodes.BTN_THUMBL: 8,   # L3
     evdev.ecodes.BTN_THUMBR: 9,   # R3
 }
+
+class ConnStatus(Enum):
+    CONNECTED = 1
+    DISCONNECTED = 2
+    RECONNECTING = 3
 
 @dataclass
 class GamepadState:
@@ -56,7 +62,7 @@ class Calibration:
 @dataclass
 class CtrlyState:
     port: str = ''
-    connected: bool = False
+    connected: ConnStatus = ConnStatus.DISCONNECTED
 
 @dataclass
 class Telemetry:
@@ -112,9 +118,11 @@ def find_port():
 def serial_thread(t):
     while True:
         while not ctrly_state.port:
+            ctrly_state.connected = ConnStatus.RECONNECTING
             try:
                 ctrly_state.port = find_port()
             except:
+                ctrly_state.connected = ConnStatus.DISCONNECTED
                 print("No port found. Retrying in 1s")
                 time.sleep(1)
         try:
@@ -122,7 +130,7 @@ def serial_thread(t):
             with serial.Serial(ctrly_state.port.device, baudrate=115200) as ser:
                 if not t.is_alive():
                     t.start()
-                ctrly_state.connected = True
+                ctrly_state.connected = ConnStatus.CONNECTED
                 while True:
                     with(input_mutex):
                         # put TX/RX stuff here
@@ -147,12 +155,12 @@ def serial_thread(t):
                     time.sleep(0.001)
         except Exception as e:
             print(e)
-            ctrly_state.connected = False
+            ctrly_state.connected = ConnStatus.DISCONNECTED
             ctrly_state.port = ''
 
 def serial_rx_thread():
     while True:
-        while ctrly_state.connected:
+        while ctrly_state.connected == ConnStatus.CONNECTED:
             try:
                 with serial.Serial(ctrly_state.port.device, baudrate=115200) as ser:
                     encoded = ser.read_until(b'\x00')[:-1]
@@ -274,9 +282,12 @@ def main():
 
         dpg.set_value(raw_steer,gp_state.rx)
         dpg.set_value(filt_steer,gp_state.rx_filt)
-        if (ctrly_state.connected):
-            dpg.set_value(conn_status, "CONNECTED")
+        if (ctrly_state.connected == ConnStatus.CONNECTED):
+            dpg.set_value(conn_status, f"CONNECTED: {ctrly_state.port}")
             dpg.configure_item(conn_status, color=[0,255,0,255])
+        elif (ctrly_state.connected == ConnStatus.RECONNECTING):
+            dpg.set_value(conn_status, "RECONNECTING")
+            dpg.configure_item(conn_status, color=[255,255,0,255])
         else:
             dpg.set_value(conn_status, "DISCONNECTED")
             dpg.configure_item(conn_status, color=[255,0,0,255])
