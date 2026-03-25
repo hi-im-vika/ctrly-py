@@ -43,10 +43,11 @@ class GamepadState:
     inv_rs: bool = True
     l_dz: int = 5000
     r_dz: int = 5000
+    r_dz2: int = 18768
     ax_max: int = 0
     ax_min: int = 0
     use_l_dz: bool = True
-    use_r_dz: bool = False
+    use_r_dz: bool = True
 
 @dataclass
 class CtrlyState:
@@ -128,8 +129,8 @@ def serial_thread(t):
                             gp_state.lx_filt = gp_state.lx
                             gp_state.ly_filt = gp_state.ly
                         if gp_state.use_r_dz:
-                            gp_state.rx_filt = gp_state.rx if abs(gp_state.rx) > gp_state.r_dz else 0
-                            gp_state.ry_filt = gp_state.ry if abs(gp_state.ry) > gp_state.r_dz else 0
+                            gp_state.rx_filt = map_range(gp_state.rx, gp_state.ax_min, gp_state.ax_max, gp_state.ax_min - (-gp_state.r_dz2), gp_state.ax_max - (gp_state.r_dz2)) if abs(gp_state.rx) > gp_state.r_dz else 0
+                            gp_state.ry_filt = map_range(gp_state.ry, gp_state.ax_min, gp_state.ax_max, gp_state.ax_min - (-gp_state.r_dz2), gp_state.ax_max - (gp_state.r_dz2)) if abs(gp_state.ry) > gp_state.r_dz else 0
                         else:
                             gp_state.rx_filt = gp_state.rx
                             gp_state.ry_filt = gp_state.ry
