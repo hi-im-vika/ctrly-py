@@ -43,6 +43,8 @@ class GamepadState:
     inv_rs: bool = True
     l_dz: float = 0.0
     r_dz: float = 0.0
+    ax_max: int = 0
+    ax_min: int = 0
 
 @dataclass
 class CtrlyState:
@@ -161,6 +163,11 @@ def main():
         exit()
 
     print(device)
+
+    abs_info = dict(device.capabilities().get(evdev.ecodes.EV_ABS, []))
+    ax_info = abs_info.get(evdev.ecodes.ABS_X)
+    gp_state.ax_min = ax_info.min if ax_info else -32768
+    gp_state.ax_max = ax_info.max if ax_info else 32767
 
     thr_input = Thread(target=input_thread, args=(device,), daemon=True)
     thr_serial_rx = Thread(target=serial_rx_thread, daemon=True)
