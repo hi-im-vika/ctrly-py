@@ -105,10 +105,10 @@ def serial_thread(t):
                     with(input_mutex):
                         # put TX/RX stuff here
                         # do deadzone calcs
-                        gp_state.lx_filt = gp_state.lx if gp_state.lx > gp_state.l_dz else 0
-                        gp_state.ly_filt = gp_state.ly if gp_state.ly > gp_state.l_dz else 0
-                        gp_state.rx_filt = gp_state.rx if gp_state.rx > gp_state.r_dz else 0
-                        gp_state.ry_filt = gp_state.ry if gp_state.ry > gp_state.r_dz else 0
+                        gp_state.lx_filt = gp_state.lx if abs(gp_state.lx) > gp_state.l_dz else 0
+                        gp_state.ly_filt = gp_state.ly if abs(gp_state.ly) > gp_state.l_dz else 0
+                        gp_state.rx_filt = gp_state.rx if abs(gp_state.rx) > gp_state.r_dz else 0
+                        gp_state.ry_filt = gp_state.ry if abs(gp_state.ry) > gp_state.r_dz else 0
                         frame = struct.pack("<4hH", gp_state.lx_filt, gp_state.ly_filt, gp_state.rx_filt, gp_state.ry_filt, gp_state.buttons)
                         # print(f"{gp_state.lx} {gp_state.ly} {gp_state.rx} {gp_state.ry}")
                         encoded = cobs.encode(frame) + b'\x00'
