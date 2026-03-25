@@ -67,6 +67,20 @@ telemetry = Telemetry()
 input_mutex = Lock()
 tm_mutex = Lock()
 
+# Source - https://stackoverflow.com/a/34837691
+# Posted by Delgan, modified by community. See post 'Timeline' for change history
+# Retrieved 2026-03-25, License - CC BY-SA 3.0
+
+def constrain(val, min_val, max_val):
+    return min(max_val, max(min_val, val))
+
+# Source - https://stackoverflow.com/a/70659904
+# Posted by CrazyChucky, modified by community. See post 'Timeline' for change history
+# Retrieved 2026-03-25, License - CC BY-SA 4.0
+
+def map_range(x, in_min, in_max, out_min, out_max):
+  return (x - in_min) * (out_max - out_min) // (in_max - in_min) + out_min
+
 def find_gamepad():
     stick_ecodes = {AX_LX, AX_LY, AX_RX, AX_RY}
     name_kws = {'microsoft', 'wireless'}
