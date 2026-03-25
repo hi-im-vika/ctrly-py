@@ -216,7 +216,6 @@ def main():
                         throttle_slider = dpg.add_slider_int(min_value = gp_state.ax_min, max_value=gp_state.ax_max,vertical=True,height=100,width=100)
                         steering_slider = dpg.add_slider_int(min_value = gp_state.ax_min, max_value=gp_state.ax_max,vertical=True,height=100,width=100)
                     with dpg.group():
-                        axis_text = dpg.add_text()
                         with dpg.table(header_row=False):
                             dpg.add_table_column()
                             dpg.add_table_column()
@@ -264,7 +263,6 @@ def main():
         dpg.set_value(raw_steer,gp_state.rx)
         dpg.set_value(filt_steer,gp_state.rx_filt)
 
-        dpg.set_value(axis_text, f"{gp_state.ly:10} {gp_state.rx:10}")
         dpg.set_value(throttle_slider, gp_state.ly)
         dpg.set_value(steering_slider, gp_state.rx)
         dpg.set_value(tx_side_tx, telemetry.tx_count)
