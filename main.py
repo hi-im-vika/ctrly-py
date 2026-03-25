@@ -180,42 +180,47 @@ def main():
     dpg.create_viewport(title='Custom Title')
 
     with dpg.window(label="The Window",tag="Primary Window"):
-        axis_text = dpg.add_text()
-        throttle_slider = dpg.add_slider_int(vertical=True, max_value=65535, height=160)
-        steering_slider = dpg.add_slider_int(vertical=True, max_value=65535, height=160)
 
-        with dpg.plot(label="Acceleration Profile", height=400, width=-1,no_inputs=True):
-            dpg.add_plot_legend()
-            xaxis = dpg.add_plot_axis(dpg.mvXAxis, label="x")
-            yaxis = dpg.add_plot_axis(dpg.mvYAxis, label="y")
-            dpg.set_axis_limits(xaxis, -32767, 32767)
-            dpg.set_axis_limits(yaxis, -32767, 32767)
+        with dpg.child_window():
+            with dpg.child_window(autosize_x=True, height=95):
+                with dpg.group(horizontal=True):
+                    axis_text = dpg.add_text()
+                    with dpg.table(header_row=False):
+                        dpg.add_table_column()
+                        dpg.add_table_column()
+                        with dpg.table_row():
+                            dpg.add_text(f"TX side TX count")
+                            tx_side_tx = dpg.add_text(f"0.1 ms")
+                        with dpg.table_row():
+                            dpg.add_text(f"TX side RX count")
+                            tx_side_rx = dpg.add_text(f"9000 hz")
+                        with dpg.table_row():
+                            dpg.add_text(f"SD UART RX fails")
+                            sd_rx_fail = dpg.add_text(f"0.1 ms")
+            with dpg.child_window(autosize_x=True, autosize_y=True):
+                with dpg.group(horizontal=True, width=0):
+                    with dpg.child_window(width=102, autosize_y=True):
+                        with dpg.group(horizontal=True, width=0):
+                            throttle_slider = dpg.add_slider_int(vertical=True, max_value=gp_state.ax_max - gp_state.ax_min, height=160)
+                            steering_slider = dpg.add_slider_int(vertical=True, max_value=gp_state.ax_max - gp_state.ax_min, height=160)
+                    with dpg.child_window(autosize_y=True):
+                        with dpg.plot(label="Acceleration Profile", height=400, width=-1,no_inputs=True):
+                            dpg.add_plot_legend()
+                            xaxis = dpg.add_plot_axis(dpg.mvXAxis, label="x")
+                            yaxis = dpg.add_plot_axis(dpg.mvYAxis, label="y")
+                            dpg.set_axis_limits(xaxis, gp_state.ax_min, gp_state.ax_max)
+                            dpg.set_axis_limits(yaxis, gp_state.ax_min, gp_state.ax_max)
 
-            dline = dpg.add_drag_line(label="dline1", color=[255, 0, 0, 255], no_inputs=True)
-            dpg.add_drag_rect(label="dz_rect", tag="dz_rect", color=[255, 0, 0, 255], default_value=(-2048,-32767,2048,32767),no_inputs=True)
-
-        with dpg.table(header_row=False):
-
-            # use add_table_column to add columns to the table,
-            # table columns use slot 0
-            dpg.add_table_column()
-            dpg.add_table_column()
-
-            with dpg.table_row():
-                dpg.add_text(f"Refresh rate")
-                dpg.add_text(f"9000 hz")
-            with dpg.table_row():
-                dpg.add_text(f"Response time")
-                dpg.add_text(f"0.1 ms")
-            with dpg.table_row():
-                dpg.add_text(f"TX side TX count")
-                tx_side_tx = dpg.add_text(f"0.1 ms")
-            with dpg.table_row():
-                dpg.add_text(f"TX side RX count")
-                tx_side_rx = dpg.add_text(f"9000 hz")
-            with dpg.table_row():
-                dpg.add_text(f"SD UART RX fails")
-                sd_rx_fail = dpg.add_text(f"0.1 ms")
+                            dline = dpg.add_drag_line(label="dline1", color=[255, 0, 0, 255], no_inputs=True)
+                            dpg.add_drag_rect(label="dz_rect", tag="dz_rect", color=[255, 0, 0, 255], default_value=(-2048,gp_state.ax_min,2048,gp_state.ax_max),no_inputs=True)
+                    with dpg.child_window(width=50, height=150):
+                        dpg.add_button(label="B1", width=25, height=25)
+                        dpg.add_button(label="B2", width=25, height=25)
+                        dpg.add_button(label="B3", width=25, height=25)
+            with dpg.group(horizontal=True):
+                dpg.add_button(label="Footer 1", width=175)
+                dpg.add_text("Footer 2")
+                dpg.add_button(label="Footer 3", width=175)
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
