@@ -229,8 +229,8 @@ def main():
         dpg.set_value(dline,gp_state.ly)
 
         dpg.set_value(axis_text, f"{gp_state.ly:10} {gp_state.rx:10}")
-        dpg.set_value(throttle_slider, gp_state.ly + 32767)
-        dpg.set_value(steering_slider, gp_state.rx + 32767)
+        dpg.set_value(throttle_slider, gp_state.ly + -gp_state.ax_min)
+        dpg.set_value(steering_slider, gp_state.rx + -gp_state.ax_min)
         dpg.set_value(tx_side_tx, telemetry.tx_count)
         dpg.set_value(tx_side_rx, telemetry.rx_count)
         dpg.set_value(sd_rx_fail, telemetry.sd_rx_fail)
