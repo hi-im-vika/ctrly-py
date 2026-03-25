@@ -64,6 +64,8 @@ class Calibration:
     rx_min_dz: int = 0
     rx_max_dz: int = 0
     trim: int = 500
+    t_factor: int = 0
+    use_t_factor: bool = False
 
 @dataclass
 class CtrlyState:
