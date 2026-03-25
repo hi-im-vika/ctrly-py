@@ -156,15 +156,15 @@ def main():
 
     print(device)
 
-    dpg.create_context()
-    dpg.create_viewport(title='Custom Title')
-
     thr_input = Thread(target=input_thread, args=(device,), daemon=True)
     thr_serial_rx = Thread(target=serial_rx_thread, daemon=True)
     thr_serial = Thread(target=serial_thread, args=(thr_serial_rx,), daemon=True)
     
     thr_input.start()
     thr_serial.start()
+
+    dpg.create_context()
+    dpg.create_viewport(title='Custom Title')
 
     with dpg.window(label="The Window",tag="Primary Window"):
         axis_text = dpg.add_text()
