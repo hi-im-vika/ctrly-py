@@ -288,6 +288,7 @@ def main():
 
 
     dpg.setup_dearpygui()
+    dpg.toggle_viewport_fullscreen()
     dpg.show_viewport()
     dpg.set_primary_window("Primary Window", True)
     while dpg.is_dearpygui_running():
