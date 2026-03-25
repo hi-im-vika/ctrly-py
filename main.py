@@ -75,6 +75,7 @@ gp_state = GamepadState(0,0,0,0,0)
 ctrly_state = CtrlyState()
 telemetry = Telemetry()
 calib = Calibration()
+zoomy_calib = Calibration()
 
 input_mutex = Lock()
 tm_mutex = Lock()
