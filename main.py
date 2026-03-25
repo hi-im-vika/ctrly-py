@@ -219,13 +219,12 @@ def main():
 
     with dpg.window(label="The Window",tag="Primary Window"):
         with dpg.group():
-            with dpg.child_window(height=100,width=-1):
+            with dpg.child_window(height=120,width=-1):
                 with dpg.group(horizontal=True):
                     with dpg.group(horizontal=True):
                         throttle_slider = dpg.add_slider_int(min_value = calib.ax_min, max_value=calib.ax_max,vertical=True,height=100,width=100)
                         steering_slider = dpg.add_slider_int(min_value = calib.ax_min, max_value=calib.ax_max,vertical=True,height=100,width=100)
-                    with dpg.group():
-                        with dpg.table(header_row=False):
+                        with dpg.table(header_row=False, width=300):
                             dpg.add_table_column()
                             dpg.add_table_column()
                             with dpg.table_row():
