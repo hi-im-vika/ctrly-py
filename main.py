@@ -188,6 +188,9 @@ def input_thread(dev):
                     else:
                         gp_state.buttons &= ~(1 << bit)
 
+def change_trim(sender, app_data, user_data):
+    calib.trim = app_data
+
 def main():
     print("Hello from ctrly-py!")
 
@@ -234,6 +237,9 @@ def main():
                             with dpg.table_row():
                                 dpg.add_text(f"SD UART RX fails")
                                 sd_rx_fail = dpg.add_text(f"0.1 ms")
+                        with dpg.group():
+                            input_int_trim = dpg.add_input_int(label="change trim", width=100, default_value=calib.trim, callback=change_trim)
+                            drag_int_trim = dpg.add_drag_int(label="change trim (faster)", width=100, default_value=calib.trim, min_value=calib.ax_min, max_value=calib.ax_max, callback=change_trim)
             with dpg.child_window(autosize_y=True):
                 with dpg.plot(label="Acceleration Profile", width=-1,no_inputs=True):
                     dpg.add_plot_legend()
@@ -268,6 +274,9 @@ def main():
 
         dpg.set_value(raw_steer,gp_state.rx)
         dpg.set_value(filt_steer,gp_state.rx_filt)
+
+        dpg.set_value(input_int_trim,calib.trim)
+        dpg.set_value(drag_int_trim,calib.trim)
 
         dpg.set_value(throttle_slider, gp_state.ly)
         dpg.set_value(steering_slider, gp_state.rx)
