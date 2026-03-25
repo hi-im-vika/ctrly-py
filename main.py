@@ -154,8 +154,15 @@ def serial_thread(t):
                     with(input_mutex):
                         # put TX/RX stuff here
                         # do deadzone calcs
-                        calib.rx_min_dz = calib.ax_min - (-calib.r_dz2) - (-calib.trim)
-                        calib.rx_max_dz = calib.ax_max - (calib.r_dz2) + (calib.trim)
+
+                        # t-factor to scale steering range based on throttle
+                        if (gp_state.ly_filt):
+                            if (calib.use_t_factor):
+                                calib.t_factor = map_range(abs(abs(abs(gp_state.ly_filt) - 32767) - 32767), calib.l_dz, 32767, 0, calib.r_dz2 - calib.l_dz - 1000)
+                            else:
+                                calib.t_factor = 0
+                        calib.rx_min_dz = calib.ax_min - (-calib.r_dz2) - (-calib.trim) - (-calib.t_factor)
+                        calib.rx_max_dz = calib.ax_max - (calib.r_dz2) + (calib.trim) - (calib.t_factor)
                         if calib.is_zoomy:
                                 gp_state.lx_filt = gp_state.lx
                                 gp_state.ly_filt = gp_state.ly
