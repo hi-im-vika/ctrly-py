@@ -209,39 +209,50 @@ def main():
     dpg.create_viewport(title='Custom Title')
 
     with dpg.window(label="The Window",tag="Primary Window"):
-        with dpg.child_window():
-            with dpg.child_window(autosize_x=True, height=95):
+        with dpg.group():
+            with dpg.child_window(height=100,width=-1):
                 with dpg.group(horizontal=True):
-                    axis_text = dpg.add_text()
-                    with dpg.table(header_row=False):
-                        dpg.add_table_column()
-                        dpg.add_table_column()
-                        with dpg.table_row():
-                            dpg.add_text(f"TX side TX count")
-                            tx_side_tx = dpg.add_text(f"0.1 ms")
-                        with dpg.table_row():
-                            dpg.add_text(f"TX side RX count")
-                            tx_side_rx = dpg.add_text(f"9000 hz")
-                        with dpg.table_row():
-                            dpg.add_text(f"SD UART RX fails")
-                            sd_rx_fail = dpg.add_text(f"0.1 ms")
-            with dpg.child_window(autosize_x=True, autosize_y=True):
-                with dpg.group(horizontal=True, width=0):
-                    with dpg.child_window(width=102, autosize_y=True):
-                        with dpg.group():
-                            throttle_knob = dpg.add_knob_float(min_value = gp_state.ax_min, max_value=gp_state.ax_max)
-                            steering_knob = dpg.add_knob_float(min_value = gp_state.ax_min, max_value=gp_state.ax_max)
-                    with dpg.child_window(autosize_y=True):
-                        with dpg.plot(label="Acceleration Profile", height=400, width=-1,no_inputs=True):
-                            dpg.add_plot_legend()
-                            xaxis = dpg.add_plot_axis(dpg.mvXAxis, label="x")
-                            yaxis = dpg.add_plot_axis(dpg.mvYAxis, label="y")
-                            dpg.set_axis_limits(xaxis, gp_state.ax_min, gp_state.ax_max)
-                            dpg.set_axis_limits(yaxis, gp_state.ax_min, gp_state.ax_max)
+                    with dpg.group(horizontal=True):
+                        throttle_slider = dpg.add_slider_int(min_value = gp_state.ax_min, max_value=gp_state.ax_max,vertical=True,height=100,width=100)
+                        steering_slider = dpg.add_slider_int(min_value = gp_state.ax_min, max_value=gp_state.ax_max,vertical=True,height=100,width=100)
+                    with dpg.group():
+                        axis_text = dpg.add_text()
+                        with dpg.table(header_row=False):
+                            dpg.add_table_column()
+                            dpg.add_table_column()
+                            with dpg.table_row():
+                                dpg.add_text(f"TX side TX count")
+                                tx_side_tx = dpg.add_text(f"0.1 ms")
+                            with dpg.table_row():
+                                dpg.add_text(f"TX side RX count")
+                                tx_side_rx = dpg.add_text(f"9000 hz")
+                            with dpg.table_row():
+                                dpg.add_text(f"SD UART RX fails")
+                                sd_rx_fail = dpg.add_text(f"0.1 ms")
+            with dpg.child_window(autosize_y=True):
+                with dpg.plot(label="Acceleration Profile", width=-1,no_inputs=True):
+                    dpg.add_plot_legend()
+                    xaxis = dpg.add_plot_axis(dpg.mvXAxis, label="x")
+                    yaxis = dpg.add_plot_axis(dpg.mvYAxis, label="y")
+                    dpg.set_axis_limits(xaxis, gp_state.ax_min, gp_state.ax_max)
+                    dpg.set_axis_limits(yaxis, gp_state.ax_min, gp_state.ax_max)
 
-                            raw_accel = dpg.add_drag_line(label="raw_accel", color=[255, 0, 0, 255], no_inputs=True)
-                            filt_accel = dpg.add_drag_line(label="filt_accel", color=[255, 255, 0, 255], no_inputs=True)
-                            dpg.add_drag_rect(label="dz_rect", tag="dz_rect", color=[255, 0, 0, 255], default_value=(-gp_state.l_dz,gp_state.ax_min,gp_state.l_dz,gp_state.ax_max),no_inputs=True)
+                    raw_accel = dpg.add_drag_line(label="raw_accel", color=[255, 0, 0, 255], no_inputs=True)
+                    filt_accel = dpg.add_drag_line(label="filt_accel", color=[255, 255, 0, 255], no_inputs=True)
+                    dpg.add_drag_rect(label="dz_rect", tag="dz_rect", color=[255, 0, 0, 255], default_value=(-gp_state.l_dz,gp_state.ax_min,gp_state.l_dz,gp_state.ax_max),no_inputs=True)
+                with dpg.plot(label="Steering Profile", width=-1,no_inputs=True):
+                    dpg.add_plot_legend()
+                    steer_xaxis = dpg.add_plot_axis(dpg.mvXAxis, label="x")
+                    steer_yaxis = dpg.add_plot_axis(dpg.mvYAxis, label="y")
+                    dpg.set_axis_limits(steer_xaxis, gp_state.ax_min, gp_state.ax_max)
+                    dpg.set_axis_limits(steer_yaxis, gp_state.ax_min, gp_state.ax_max)
+
+                    raw_steer = dpg.add_drag_line(label="raw_steer", color=[255, 0, 0, 255], no_inputs=True)
+                    filt_steer = dpg.add_drag_line(label="filt_steer", color=[255, 255, 0, 255], no_inputs=True)
+
+                    dpg.add_drag_rect(label="r_dz2_rect", color=[255, 255, 0, 255], default_value=(gp_state.ax_min - (-gp_state.r_dz2),gp_state.ax_min,gp_state.ax_max - (gp_state.r_dz2), gp_state.ax_max),no_inputs=True)
+                    dpg.add_drag_rect(label="r_dz_rect", color=[255, 0, 0, 255], default_value=(-gp_state.r_dz,gp_state.ax_min,gp_state.r_dz,gp_state.ax_max),no_inputs=True)
+
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
