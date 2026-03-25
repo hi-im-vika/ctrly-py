@@ -45,6 +45,8 @@ class GamepadState:
     r_dz: int = 5000
     ax_max: int = 0
     ax_min: int = 0
+    use_l_dz: bool = True
+    use_r_dz: bool = False
 
 @dataclass
 class CtrlyState:
@@ -105,10 +107,18 @@ def serial_thread(t):
                     with(input_mutex):
                         # put TX/RX stuff here
                         # do deadzone calcs
-                        gp_state.lx_filt = gp_state.lx if abs(gp_state.lx) > gp_state.l_dz else 0
-                        gp_state.ly_filt = gp_state.ly if abs(gp_state.ly) > gp_state.l_dz else 0
-                        gp_state.rx_filt = gp_state.rx if abs(gp_state.rx) > gp_state.r_dz else 0
-                        gp_state.ry_filt = gp_state.ry if abs(gp_state.ry) > gp_state.r_dz else 0
+                        if gp_state.use_l_dz:
+                            gp_state.lx_filt = gp_state.lx if abs(gp_state.lx) > gp_state.l_dz else 0
+                            gp_state.ly_filt = gp_state.ly if abs(gp_state.ly) > gp_state.l_dz else 0
+                        else:
+                            gp_state.lx_filt = gp_state.lx
+                            gp_state.ly_filt = gp_state.ly
+                        if gp_state.use_r_dz:
+                            gp_state.rx_filt = gp_state.rx if abs(gp_state.rx) > gp_state.r_dz else 0
+                            gp_state.ry_filt = gp_state.ry if abs(gp_state.ry) > gp_state.r_dz else 0
+                        else:
+                            gp_state.rx_filt = gp_state.rx
+                            gp_state.ry_filt = gp_state.ry
                         frame = struct.pack("<4hH", gp_state.lx_filt, gp_state.ly_filt, gp_state.rx_filt, gp_state.ry_filt, gp_state.buttons)
                         # print(f"{gp_state.lx} {gp_state.ly} {gp_state.rx} {gp_state.ry}")
                         encoded = cobs.encode(frame) + b'\x00'
