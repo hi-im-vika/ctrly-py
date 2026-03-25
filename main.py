@@ -59,6 +59,10 @@ class Calibration:
     ax_min: int = 0
     use_l_dz: bool = True
     use_r_dz: bool = True
+    ly_min_dz: int = 0
+    ly_max_dz: int = 0
+    rx_min_dz: int = 0
+    rx_max_dz: int = 0
     trim: int = 500
 
 @dataclass
@@ -150,6 +154,8 @@ def serial_thread(t):
                     with(input_mutex):
                         # put TX/RX stuff here
                         # do deadzone calcs
+                        calib.rx_min_dz = calib.ax_min - (-calib.r_dz2) - (-calib.trim)
+                        calib.rx_max_dz = calib.ax_max - (calib.r_dz2) + (calib.trim)
                         if calib.is_zoomy:
                                 gp_state.lx_filt = gp_state.lx
                                 gp_state.ly_filt = gp_state.ly
@@ -163,7 +169,7 @@ def serial_thread(t):
                                 gp_state.lx_filt = gp_state.lx
                                 gp_state.ly_filt = gp_state.ly
                             if calib.use_r_dz:
-                                gp_state.rx_filt = map_range(gp_state.rx, calib.ax_min, calib.ax_max, calib.ax_min - (-calib.r_dz2), calib.ax_max - (calib.r_dz2)) + calib.trim if abs(gp_state.rx) > calib.r_dz else calib.trim
+                                gp_state.rx_filt = map_range(gp_state.rx, calib.ax_min, calib.ax_max, calib.rx_min_dz, calib.rx_max_dz) if abs(gp_state.rx) > calib.r_dz else calib.trim
                                 gp_state.ry_filt = map_range(gp_state.ry, calib.ax_min, calib.ax_max, calib.ax_min - (-calib.r_dz2), calib.ax_max - (calib.r_dz2)) if abs(gp_state.ry) > calib.r_dz else 0
                             else:
                                 gp_state.rx_filt = gp_state.rx
@@ -309,7 +315,7 @@ def main():
                     raw_steer = dpg.add_drag_line(label="raw_steer", color=[255, 0, 0, 255], no_inputs=True)
                     filt_steer = dpg.add_drag_line(label="filt_steer", color=[255, 255, 0, 255], no_inputs=True)
 
-                    r_dz2_rect = dpg.add_drag_rect(label="r_dz2_rect", color=[255, 255, 0, 255], default_value=(calib.ax_min - (-calib.r_dz2) - (-calib.trim),calib.ax_min,calib.ax_max - (calib.r_dz2) - (calib.trim), calib.ax_max),no_inputs=True)
+                    r_dz2_rect = dpg.add_drag_rect(label="r_dz2_rect", color=[255, 255, 0, 255], default_value=(calib.rx_min_dz,calib.ax_min,calib.rx_max_dz, calib.ax_max),no_inputs=True)
                     r_dz_rect = dpg.add_drag_rect(label="r_dz_rect", color=[255, 0, 0, 255], default_value=(-calib.r_dz,calib.ax_min,calib.r_dz,calib.ax_max),no_inputs=True)
 
 
@@ -343,7 +349,7 @@ def main():
             dpg.configure_item(cb_use_l_dz, show=True)
             dpg.configure_item(cb_use_r_dz, show=True)
 
-        dpg.set_value(r_dz2_rect, (calib.ax_min - (-calib.r_dz2) - (-calib.trim),calib.ax_min,calib.ax_max - (calib.r_dz2) + (calib.trim), calib.ax_max))
+        dpg.set_value(r_dz2_rect, (calib.rx_min_dz,calib.ax_min,calib.rx_max_dz, calib.ax_max))
 
         dpg.set_value(throttle_slider, gp_state.ly)
         dpg.set_value(steering_slider, gp_state.rx)
