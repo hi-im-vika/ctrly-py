@@ -104,7 +104,12 @@ def serial_thread(t):
                 while True:
                     with(input_mutex):
                         # put TX/RX stuff here
-                        frame = struct.pack("<4hH", gp_state.lx, gp_state.ly, gp_state.rx, gp_state.ry, gp_state.buttons)
+                        # do deadzone calcs
+                        gp_state.lx_filt = gp_state.lx
+                        gp_state.ly_filt = gp_state.ly
+                        gp_state.rx_filt = gp_state.rx
+                        gp_state.ry_filt = gp_state.ry
+                        frame = struct.pack("<4hH", gp_state.lx_filt, gp_state.ly_filt, gp_state.rx_filt, gp_state.ry_filt, gp_state.buttons)
                         # print(f"{gp_state.lx} {gp_state.ly} {gp_state.rx} {gp_state.ry}")
                         encoded = cobs.encode(frame) + b'\x00'
                         ser.write(encoded)
