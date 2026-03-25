@@ -41,6 +41,9 @@ class GamepadState:
     buttons: int = 0
     inv_ls: bool = True
     inv_rs: bool = True
+
+@dataclass
+class Calibration:
     l_dz: int = 5000
     r_dz: int = 5000
     r_dz2: int = 18768
@@ -48,7 +51,7 @@ class GamepadState:
     ax_min: int = 0
     use_l_dz: bool = True
     use_r_dz: bool = True
-    trim: int = 0
+    trim: int = 500
 
 @dataclass
 class CtrlyState:
@@ -65,6 +68,7 @@ class Telemetry:
 gp_state = GamepadState(0,0,0,0,0)
 ctrly_state = CtrlyState()
 telemetry = Telemetry()
+calib = Calibration()
 
 input_mutex = Lock()
 tm_mutex = Lock()
