@@ -66,6 +66,8 @@ class Calibration:
     trim: int = 500
     t_factor: int = 0
     use_t_factor: bool = True
+    constrain_rx: bool = False
+    constrain_mag: int = 5000
 
 @dataclass
 class CtrlyState:
@@ -160,11 +162,15 @@ def serial_thread(t):
                         # t-factor to scale steering range based on throttle
                         if (gp_state.ly_filt):
                             if (calib.use_t_factor):
-                                calib.t_factor = map_range(abs(abs(abs(gp_state.ly_filt) - 32767) - 32767), calib.l_dz, 32767, 0, calib.r_dz2 - calib.l_dz - 1000)
+                                calib.t_factor = map_range(abs(abs(abs(gp_state.ly_filt) - 32767) - 32767), calib.l_dz, 32767, 0, calib.r_dz2 - calib.l_dz)
                             else:
                                 calib.t_factor = 0
-                        calib.rx_min_dz = calib.ax_min - (-calib.r_dz2) - (-calib.trim) - (-calib.t_factor)
-                        calib.rx_max_dz = calib.ax_max - (calib.r_dz2) + (calib.trim) - (calib.t_factor)
+                        if calib.constrain_rx and not calib.use_t_factor:
+                            calib.rx_min_dz = calib.ax_min - (-calib.r_dz2) - (-calib.trim)+ calib.constrain_mag
+                            calib.rx_max_dz = calib.ax_max - (calib.r_dz2) + (calib.trim) - calib.constrain_mag
+                        else:
+                            calib.rx_min_dz = calib.ax_min - (-calib.r_dz2) - (-calib.trim) - (-calib.t_factor)
+                            calib.rx_max_dz = calib.ax_max - (calib.r_dz2) + (calib.trim) - (calib.t_factor)
                         if calib.is_zoomy:
                                 gp_state.lx_filt = gp_state.lx
                                 gp_state.ly_filt = gp_state.ly
@@ -250,6 +256,9 @@ def use_r_dz_cb(sender, app_data, user_data):
 def use_t_factor_cb(sender, app_data, user_data):
     calib.use_t_factor = app_data
 
+def constrain_rx_cb(sender, app_data, user_data):
+    calib.constrain_rx = app_data
+
 def main():
     print("Hello from ctrly-py!")
 
@@ -306,6 +315,7 @@ def main():
                             cb_use_l_dz = dpg.add_checkbox(label="use_l_dz", default_value=calib.use_l_dz, callback=use_l_dz_cb)
                             cb_use_r_dz = dpg.add_checkbox(label="use_r_dz", default_value=calib.use_r_dz, callback=use_r_dz_cb)
                             cb_use_t_factor = dpg.add_checkbox(label="use_t_factor", default_value=calib.use_t_factor, callback=use_t_factor_cb)
+                            cb_constrain_rx = dpg.add_checkbox(label="constrain_rx", default_value=calib.constrain_rx, callback=constrain_rx_cb)
                         dpg.add_button(label="fullscreen", width=100, height=100, callback=lambda:dpg.toggle_viewport_fullscreen())
                         dpg.add_button(label="exit", width=100, height=100, callback=lambda:exit())
             with dpg.child_window(autosize_y=True):
@@ -361,10 +371,12 @@ def main():
             dpg.configure_item(cb_use_l_dz, show=False)
             dpg.configure_item(cb_use_r_dz, show=False)
             dpg.configure_item(cb_use_t_factor, show=False)
+            dpg.configure_item(cb_constrain_rx, show=False)
         else:
             dpg.configure_item(cb_use_l_dz, show=True)
             dpg.configure_item(cb_use_r_dz, show=True)
             dpg.configure_item(cb_use_t_factor, show=True)
+            dpg.configure_item(cb_constrain_rx, show=True)
 
         dpg.set_value(r_dz2_rect, (calib.rx_min_dz,calib.ax_min,calib.rx_max_dz, calib.ax_max))
 
