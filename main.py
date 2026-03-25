@@ -287,6 +287,8 @@ def main():
                         with dpg.group():
                             input_int_trim = dpg.add_input_int(label="change trim", width=100, default_value=calib.trim, callback=change_trim)
                             drag_int_trim = dpg.add_drag_int(label="change trim (faster)", width=100, default_value=calib.trim, min_value=calib.ax_min, max_value=calib.ax_max, callback=change_trim)
+                            accel_actual_sent = dpg.add_text("A")
+                            steer_actual_sent = dpg.add_text("A")
                         with dpg.group():
                             cb_is_zoomy = dpg.add_checkbox(label="is zoomy", default_value=calib.is_zoomy, callback=is_zoomy_cb)
                             cb_use_l_dz = dpg.add_checkbox(label="use_l_dz", default_value=calib.use_l_dz, callback=use_l_dz_cb)
@@ -350,6 +352,9 @@ def main():
             dpg.configure_item(cb_use_r_dz, show=True)
 
         dpg.set_value(r_dz2_rect, (calib.rx_min_dz,calib.ax_min,calib.rx_max_dz, calib.ax_max))
+
+        dpg.set_value(accel_actual_sent, gp_state.ly_filt)
+        dpg.set_value(steer_actual_sent, gp_state.rx_filt)
 
         dpg.set_value(throttle_slider, gp_state.ly)
         dpg.set_value(steering_slider, gp_state.rx)
