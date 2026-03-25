@@ -177,11 +177,11 @@ def main():
             dpg.add_plot_legend()
             xaxis = dpg.add_plot_axis(dpg.mvXAxis, label="x")
             yaxis = dpg.add_plot_axis(dpg.mvYAxis, label="y")
-            dpg.set_axis_limits(xaxis, 0, 1)
-            dpg.set_axis_limits(yaxis, 0, 1)
+            dpg.set_axis_limits(xaxis, -32767, 32767)
+            dpg.set_axis_limits(yaxis, -32767, 32767)
 
             dline = dpg.add_drag_line(label="dline1", color=[255, 0, 0, 255], no_inputs=True)
-            dpg.add_drag_rect(label="dz_rect", tag="dz_rect", color=[255, 0, 0, 255], default_value=(0.4,0,0.6,1),no_inputs=True)
+            dpg.add_drag_rect(label="dz_rect", tag="dz_rect", color=[255, 0, 0, 255], default_value=(-2048,-32767,2048,32767),no_inputs=True)
 
         with dpg.table(header_row=False):
 
@@ -210,8 +210,7 @@ def main():
     dpg.show_viewport()
     dpg.set_primary_window("Primary Window", True)
     while dpg.is_dearpygui_running():
-        tht_val_norm = (gp_state.ly + 32767) / 65535
-        dpg.set_value(dline,tht_val_norm)
+        dpg.set_value(dline,gp_state.ly)
 
         dpg.set_value(axis_text, f"{gp_state.ly:10} {gp_state.rx:10}")
         dpg.set_value(throttle_slider, gp_state.ly + 32767)
