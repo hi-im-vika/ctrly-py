@@ -310,6 +310,13 @@ def main():
         dpg.set_value(input_int_trim,calib.trim)
         dpg.set_value(drag_int_trim,calib.trim)
 
+        if (calib.is_zoomy):
+            dpg.configure_item(cb_use_l_dz, show=False)
+            dpg.configure_item(cb_use_r_dz, show=False)
+        else:
+            dpg.configure_item(cb_use_l_dz, show=True)
+            dpg.configure_item(cb_use_r_dz, show=True)
+
         dpg.set_value(throttle_slider, gp_state.ly)
         dpg.set_value(steering_slider, gp_state.rx)
         dpg.set_value(tx_side_tx, telemetry.tx_count)
