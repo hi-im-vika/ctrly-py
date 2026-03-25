@@ -34,6 +34,10 @@ class GamepadState:
     ly: int = 0
     rx: int = 0
     ry: int = 0
+    lx_filt: int = 0
+    ly_filt: int = 0
+    rx_filt: int = 0
+    ry_filt: int = 0
     buttons: int = 0
     inv_ls: bool = True
     inv_rs: bool = True
