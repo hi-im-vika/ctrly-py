@@ -50,6 +50,7 @@ class GamepadState:
 
 @dataclass
 class Calibration:
+    is_zoomy = True
     l_dz: int = 5000
     r_dz: int = 5000
     r_dz2: int = 18768
