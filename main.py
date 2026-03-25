@@ -48,6 +48,7 @@ class GamepadState:
     ax_min: int = 0
     use_l_dz: bool = True
     use_r_dz: bool = True
+    trim: int = 0
 
 @dataclass
 class CtrlyState:
