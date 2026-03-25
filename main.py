@@ -127,15 +127,15 @@ def serial_thread(t):
                     with(input_mutex):
                         # put TX/RX stuff here
                         # do deadzone calcs
-                        if gp_state.use_l_dz:
-                            gp_state.lx_filt = gp_state.lx if abs(gp_state.lx) > gp_state.l_dz else 0
-                            gp_state.ly_filt = gp_state.ly if abs(gp_state.ly) > gp_state.l_dz else 0
+                        if calib.use_l_dz:
+                            gp_state.lx_filt = gp_state.lx if abs(gp_state.lx) > calib.l_dz else 0
+                            gp_state.ly_filt = gp_state.ly if abs(gp_state.ly) > calib.l_dz else 0
                         else:
                             gp_state.lx_filt = gp_state.lx
                             gp_state.ly_filt = gp_state.ly
-                        if gp_state.use_r_dz:
-                            gp_state.rx_filt = map_range(gp_state.rx, gp_state.ax_min, gp_state.ax_max, gp_state.ax_min - (-gp_state.r_dz2), gp_state.ax_max - (gp_state.r_dz2)) + gp_state.trim if abs(gp_state.rx) > gp_state.r_dz else gp_state.trim
-                            gp_state.ry_filt = map_range(gp_state.ry, gp_state.ax_min, gp_state.ax_max, gp_state.ax_min - (-gp_state.r_dz2), gp_state.ax_max - (gp_state.r_dz2)) if abs(gp_state.ry) > gp_state.r_dz else 0
+                        if calib.use_r_dz:
+                            gp_state.rx_filt = map_range(gp_state.rx, calib.ax_min, calib.ax_max, calib.ax_min - (-calib.r_dz2), calib.ax_max - (calib.r_dz2)) + calib.trim if abs(gp_state.rx) > calib.r_dz else calib.trim
+                            gp_state.ry_filt = map_range(gp_state.ry, calib.ax_min, calib.ax_max, calib.ax_min - (-calib.r_dz2), calib.ax_max - (calib.r_dz2)) if abs(gp_state.ry) > calib.r_dz else 0
                         else:
                             gp_state.rx_filt = gp_state.rx
                             gp_state.ry_filt = gp_state.ry
@@ -201,8 +201,8 @@ def main():
 
     abs_info = dict(device.capabilities().get(evdev.ecodes.EV_ABS, []))
     ax_info = abs_info.get(evdev.ecodes.ABS_X)
-    gp_state.ax_min = ax_info.min if ax_info else -32768
-    gp_state.ax_max = ax_info.max if ax_info else 32767
+    calib.ax_min = ax_info.min if ax_info else -32768
+    calib.ax_max = ax_info.max if ax_info else 32767
 
     thr_input = Thread(target=input_thread, args=(device,), daemon=True)
     thr_serial_rx = Thread(target=serial_rx_thread, daemon=True)
@@ -219,8 +219,8 @@ def main():
             with dpg.child_window(height=100,width=-1):
                 with dpg.group(horizontal=True):
                     with dpg.group(horizontal=True):
-                        throttle_slider = dpg.add_slider_int(min_value = gp_state.ax_min, max_value=gp_state.ax_max,vertical=True,height=100,width=100)
-                        steering_slider = dpg.add_slider_int(min_value = gp_state.ax_min, max_value=gp_state.ax_max,vertical=True,height=100,width=100)
+                        throttle_slider = dpg.add_slider_int(min_value = calib.ax_min, max_value=calib.ax_max,vertical=True,height=100,width=100)
+                        steering_slider = dpg.add_slider_int(min_value = calib.ax_min, max_value=calib.ax_max,vertical=True,height=100,width=100)
                     with dpg.group():
                         with dpg.table(header_row=False):
                             dpg.add_table_column()
@@ -239,24 +239,24 @@ def main():
                     dpg.add_plot_legend()
                     xaxis = dpg.add_plot_axis(dpg.mvXAxis, label="x")
                     yaxis = dpg.add_plot_axis(dpg.mvYAxis, label="y")
-                    dpg.set_axis_limits(xaxis, gp_state.ax_min, gp_state.ax_max)
-                    dpg.set_axis_limits(yaxis, gp_state.ax_min, gp_state.ax_max)
+                    dpg.set_axis_limits(xaxis, calib.ax_min, calib.ax_max)
+                    dpg.set_axis_limits(yaxis, calib.ax_min, calib.ax_max)
 
                     raw_accel = dpg.add_drag_line(label="raw_accel", color=[255, 0, 0, 255], no_inputs=True)
                     filt_accel = dpg.add_drag_line(label="filt_accel", color=[255, 255, 0, 255], no_inputs=True)
-                    dpg.add_drag_rect(label="dz_rect", tag="dz_rect", color=[255, 0, 0, 255], default_value=(-gp_state.l_dz,gp_state.ax_min,gp_state.l_dz,gp_state.ax_max),no_inputs=True)
+                    dpg.add_drag_rect(label="dz_rect", tag="dz_rect", color=[255, 0, 0, 255], default_value=(-calib.l_dz,calib.ax_min,calib.l_dz,calib.ax_max),no_inputs=True)
                 with dpg.plot(label="Steering Profile", width=-1,no_inputs=True):
                     dpg.add_plot_legend()
                     steer_xaxis = dpg.add_plot_axis(dpg.mvXAxis, label="x")
                     steer_yaxis = dpg.add_plot_axis(dpg.mvYAxis, label="y")
-                    dpg.set_axis_limits(steer_xaxis, gp_state.ax_min, gp_state.ax_max)
-                    dpg.set_axis_limits(steer_yaxis, gp_state.ax_min, gp_state.ax_max)
+                    dpg.set_axis_limits(steer_xaxis, calib.ax_min, calib.ax_max)
+                    dpg.set_axis_limits(steer_yaxis, calib.ax_min, calib.ax_max)
 
                     raw_steer = dpg.add_drag_line(label="raw_steer", color=[255, 0, 0, 255], no_inputs=True)
                     filt_steer = dpg.add_drag_line(label="filt_steer", color=[255, 255, 0, 255], no_inputs=True)
 
-                    dpg.add_drag_rect(label="r_dz2_rect", color=[255, 255, 0, 255], default_value=(gp_state.ax_min - (-gp_state.r_dz2),gp_state.ax_min,gp_state.ax_max - (gp_state.r_dz2), gp_state.ax_max),no_inputs=True)
-                    dpg.add_drag_rect(label="r_dz_rect", color=[255, 0, 0, 255], default_value=(-gp_state.r_dz,gp_state.ax_min,gp_state.r_dz,gp_state.ax_max),no_inputs=True)
+                    dpg.add_drag_rect(label="r_dz2_rect", color=[255, 255, 0, 255], default_value=(calib.ax_min - (-calib.r_dz2),calib.ax_min,calib.ax_max - (calib.r_dz2), calib.ax_max),no_inputs=True)
+                    dpg.add_drag_rect(label="r_dz_rect", color=[255, 0, 0, 255], default_value=(-calib.r_dz,calib.ax_min,calib.r_dz,calib.ax_max),no_inputs=True)
 
 
     dpg.setup_dearpygui()
