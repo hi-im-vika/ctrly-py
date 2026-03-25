@@ -225,18 +225,20 @@ def main():
                             dpg.set_axis_limits(xaxis, gp_state.ax_min, gp_state.ax_max)
                             dpg.set_axis_limits(yaxis, gp_state.ax_min, gp_state.ax_max)
 
-                            dline = dpg.add_drag_line(label="dline1", color=[255, 0, 0, 255], no_inputs=True)
-                            dpg.add_drag_rect(label="dz_rect", tag="dz_rect", color=[255, 0, 0, 255], default_value=(-2048,gp_state.ax_min,2048,gp_state.ax_max),no_inputs=True)
+                            raw_accel = dpg.add_drag_line(label="raw_accel", color=[255, 0, 0, 255], no_inputs=True)
+                            filt_accel = dpg.add_drag_line(label="filt_accel", color=[255, 255, 0, 255], no_inputs=True)
+                            dpg.add_drag_rect(label="dz_rect", tag="dz_rect", color=[255, 0, 0, 255], default_value=(-gp_state.l_dz,gp_state.ax_min,gp_state.l_dz,gp_state.ax_max),no_inputs=True)
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
     dpg.set_primary_window("Primary Window", True)
     while dpg.is_dearpygui_running():
-        dpg.set_value(dline,gp_state.ly)
+        dpg.set_value(raw_accel,gp_state.ly)
+        dpg.set_value(filt_accel,gp_state.ly_filt)
 
         dpg.set_value(axis_text, f"{gp_state.ly:10} {gp_state.rx:10}")
-        dpg.set_value(throttle_slider, gp_state.ly + -gp_state.ax_min)
-        dpg.set_value(steering_slider, gp_state.rx + -gp_state.ax_min)
+        dpg.set_value(throttle_knob, gp_state.ly)
+        dpg.set_value(steering_knob, gp_state.rx)
         dpg.set_value(tx_side_tx, telemetry.tx_count)
         dpg.set_value(tx_side_rx, telemetry.rx_count)
         dpg.set_value(sd_rx_fail, telemetry.sd_rx_fail)
