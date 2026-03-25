@@ -180,7 +180,6 @@ def main():
     dpg.create_viewport(title='Custom Title')
 
     with dpg.window(label="The Window",tag="Primary Window"):
-
         with dpg.child_window():
             with dpg.child_window(autosize_x=True, height=95):
                 with dpg.group(horizontal=True):
@@ -201,7 +200,7 @@ def main():
                 with dpg.group(horizontal=True, width=0):
                     with dpg.child_window(width=102, autosize_y=True):
                         with dpg.group(horizontal=True, width=0):
-                            throttle_slider = dpg.add_slider_int(vertical=True, max_value=gp_state.ax_max - gp_state.ax_min, height=160)
+                            throttle_slider = dpg.add_slider_int(vertical=True, max_value=gp_state.ax_max - gp_state.ax_min, height=160, )
                             steering_slider = dpg.add_slider_int(vertical=True, max_value=gp_state.ax_max - gp_state.ax_min, height=160)
                     with dpg.child_window(autosize_y=True):
                         with dpg.plot(label="Acceleration Profile", height=400, width=-1,no_inputs=True):
@@ -213,14 +212,6 @@ def main():
 
                             dline = dpg.add_drag_line(label="dline1", color=[255, 0, 0, 255], no_inputs=True)
                             dpg.add_drag_rect(label="dz_rect", tag="dz_rect", color=[255, 0, 0, 255], default_value=(-2048,gp_state.ax_min,2048,gp_state.ax_max),no_inputs=True)
-                    with dpg.child_window(width=50, height=150):
-                        dpg.add_button(label="B1", width=25, height=25)
-                        dpg.add_button(label="B2", width=25, height=25)
-                        dpg.add_button(label="B3", width=25, height=25)
-            with dpg.group(horizontal=True):
-                dpg.add_button(label="Footer 1", width=175)
-                dpg.add_text("Footer 2")
-                dpg.add_button(label="Footer 3", width=175)
 
     dpg.setup_dearpygui()
     dpg.show_viewport()
