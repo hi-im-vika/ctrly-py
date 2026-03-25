@@ -81,6 +81,25 @@ zoomy_calib = Calibration()
 input_mutex = Lock()
 tm_mutex = Lock()
 
+calib_defaults = {
+    "calibration": {
+        "trim": 500
+    }
+}
+
+def load_config():
+    config = configparser.ConfigParser()
+
+    for section, value in calib_defaults.items():
+        config[section] = value
+
+    config.read("config.ini")
+    return config
+
+config = load_config()
+
+calib.trim = int(config['calibration']['trim'])
+
 # Source - https://stackoverflow.com/a/70659904
 # Posted by CrazyChucky, modified by community. See post 'Timeline' for change history
 # Retrieved 2026-03-25, License - CC BY-SA 4.0
