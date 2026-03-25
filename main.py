@@ -218,6 +218,7 @@ def main():
     dpg.create_viewport(title='Custom Title')
 
     with dpg.window(label="The Window",tag="Primary Window"):
+        conn_status = dpg.add_text(label="")
         with dpg.group():
             with dpg.child_window(height=120,width=-1):
                 with dpg.group(horizontal=True):
@@ -273,6 +274,12 @@ def main():
 
         dpg.set_value(raw_steer,gp_state.rx)
         dpg.set_value(filt_steer,gp_state.rx_filt)
+        if (ctrly_state.connected):
+            dpg.set_value(conn_status, "CONNECTED")
+            dpg.configure_item(conn_status, color=[0,255,0,255])
+        else:
+            dpg.set_value(conn_status, "DISCONNECTED")
+            dpg.configure_item(conn_status, color=[255,0,0,255])
 
         dpg.set_value(input_int_trim,calib.trim)
         dpg.set_value(drag_int_trim,calib.trim)
