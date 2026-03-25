@@ -50,7 +50,7 @@ class GamepadState:
 
 @dataclass
 class Calibration:
-    is_zoomy = True
+    is_zoomy = False
     l_dz: int = 5000
     r_dz: int = 5000
     r_dz2: int = 18768
@@ -200,6 +200,15 @@ def input_thread(dev):
 def change_trim(sender, app_data, user_data):
     calib.trim = app_data
 
+def is_zoomy_cb(sender, app_data, user_data):
+    calib.is_zoomy = app_data
+
+def use_l_dz_cb(sender, app_data, user_data):
+    calib.use_l_dz = app_data
+
+def use_r_dz_cb(sender, app_data, user_data):
+    calib.use_r_dz = app_data
+
 def main():
     print("Hello from ctrly-py!")
 
@@ -249,6 +258,10 @@ def main():
                         with dpg.group():
                             input_int_trim = dpg.add_input_int(label="change trim", width=100, default_value=calib.trim, callback=change_trim)
                             drag_int_trim = dpg.add_drag_int(label="change trim (faster)", width=100, default_value=calib.trim, min_value=calib.ax_min, max_value=calib.ax_max, callback=change_trim)
+                        with dpg.group():
+                            cb_is_zoomy = dpg.add_checkbox(label="is zoomy", default_value=calib.is_zoomy, callback=is_zoomy_cb)
+                            cb_use_l_dz = dpg.add_checkbox(label="use_l_dz", default_value=calib.use_l_dz, callback=use_l_dz_cb)
+                            cb_use_r_dz = dpg.add_checkbox(label="use_r_dz", default_value=calib.use_r_dz, callback=use_r_dz_cb)
             with dpg.child_window(autosize_y=True):
                 with dpg.plot(label="Acceleration Profile", width=-1,no_inputs=True):
                     dpg.add_plot_legend()
