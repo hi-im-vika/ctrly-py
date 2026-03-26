@@ -293,18 +293,21 @@ def main():
                     with dpg.group(horizontal=True):
                         throttle_slider = dpg.add_slider_int(min_value = calib.ax_min, max_value=calib.ax_max,vertical=True,height=100,width=100)
                         steering_slider = dpg.add_slider_int(min_value = calib.ax_min, max_value=calib.ax_max,vertical=True,height=100,width=100)
-                        with dpg.table(header_row=False, width=300):
-                            dpg.add_table_column()
-                            dpg.add_table_column()
-                            with dpg.table_row():
-                                dpg.add_text(f"TX side TX count")
-                                tx_side_tx = dpg.add_text(f"0.1 ms")
-                            with dpg.table_row():
-                                dpg.add_text(f"TX side RX count")
-                                tx_side_rx = dpg.add_text(f"9000 hz")
-                            with dpg.table_row():
-                                dpg.add_text(f"SD UART RX fails")
-                                sd_rx_fail = dpg.add_text(f"0.1 ms")
+                        with dpg.group():
+                            with dpg.table(header_row=False, width=300):
+                                dpg.add_table_column()
+                                dpg.add_table_column()
+                                with dpg.table_row():
+                                    dpg.add_text(f"TX side TX count")
+                                    tx_side_tx = dpg.add_text(f"0.1 ms")
+                                with dpg.table_row():
+                                    dpg.add_text(f"TX side RX count")
+                                    tx_side_rx = dpg.add_text(f"9000 hz")
+                                with dpg.table_row():
+                                    dpg.add_text(f"SD UART RX fails")
+                                    sd_rx_fail = dpg.add_text(f"0.1 ms")
+                            accel_actual_sent = dpg.add_text("A")
+                            steer_actual_sent = dpg.add_text("A")
                         with dpg.group():
                             input_int_trim = dpg.add_input_int(label="change trim", width=100, default_value=calib.trim, callback=change_trim)
                             drag_int_trim = dpg.add_drag_int(label="change trim (faster)", width=100, default_value=calib.trim, min_value=calib.ax_min, max_value=calib.ax_max, callback=change_trim)
