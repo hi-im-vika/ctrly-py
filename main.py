@@ -92,7 +92,8 @@ tm_mutex = Lock()
 
 calib_defaults = {
     "calibration": {
-        "trim": 500
+        "trim": 500,
+        "crx": 5000
     }
 }
 
@@ -244,6 +245,12 @@ def change_trim(sender, app_data, user_data):
         config["calibration"]["trim"] = str(calib.trim)
         config.write(cfgfile)
 
+def change_crx(sender, app_data, user_data):
+    calib.constrain_mag = app_data
+    with open('config.ini', 'w') as cfgfile:
+        config["calibration"]["crx"] = str(calib.constrain_mag)
+        config.write(cfgfile)
+
 def is_zoomy_cb(sender, app_data, user_data):
     calib.is_zoomy = app_data
 
@@ -311,8 +318,8 @@ def main():
                         with dpg.group():
                             input_int_trim = dpg.add_input_int(label="change trim", width=100, default_value=calib.trim, callback=change_trim)
                             drag_int_trim = dpg.add_drag_int(label="change trim (faster)", width=100, default_value=calib.trim, min_value=calib.ax_min, max_value=calib.ax_max, callback=change_trim)
-                            accel_actual_sent = dpg.add_text("A")
-                            steer_actual_sent = dpg.add_text("A")
+                            drag_int_crx = dpg.add_drag_int(label="change crx", width=100, default_value=calib.constrain_mag, min_value=calib.ax_min, max_value=calib.ax_max, callback=change_crx)
+
                         with dpg.group():
                             cb_is_zoomy = dpg.add_checkbox(label="is zoomy", default_value=calib.is_zoomy, callback=is_zoomy_cb)
                             cb_use_l_dz = dpg.add_checkbox(label="use_l_dz", default_value=calib.use_l_dz, callback=use_l_dz_cb)
@@ -369,6 +376,7 @@ def main():
 
         dpg.set_value(input_int_trim,calib.trim)
         dpg.set_value(drag_int_trim,calib.trim)
+        dpg.set_value(drag_int_crx,calib.constrain_mag)
 
         if (calib.is_zoomy):
             dpg.configure_item(cb_use_l_dz, show=False)
